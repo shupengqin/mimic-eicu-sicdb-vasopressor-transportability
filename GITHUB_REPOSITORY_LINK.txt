@@ -1,0 +1,8 @@
+Repository URL:
+https://github.com/shupengqin/mimic-eicu-sicdb-vasopressor-transportability
+
+Visibility: Private
+Default branch: main
+Initial commit: b8df6a9
+
+The repository contains scrubbed analysis code, SQL templates and documentation only. It does not contain raw MIMIC-IV/eICU-CRD/SICdb data, patient-level extracts, row-level predictions, credentials or frozen model objects.
