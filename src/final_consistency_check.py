@@ -197,7 +197,9 @@ def main() -> None:
     require("Figure 1,all,cohort_flow.csv" in manifest, "Figure 1 absent from source manifest")
     legends = (OUTPUTS / "corrected_figure_legends.md").read_text(encoding="utf-8")
     require("Supplementary Fig. S2" in legends, "Supplementary Figure S2 legend absent")
-    for stem in ("Figure_1_cohort_flow", "Figure_2_study_design", "Figure_3_discrimination", "Figure_4_calibration", "Figure_5_clinical_utility", "Supplementary_Figure_S1_robustness", "Supplementary_Figure_S2_methodological_extensions"):
+    # Check only the canonical upload names; descriptive aliases and prior layouts
+    # are kept outside the final figures directory to prevent upload ambiguity.
+    for stem in ("Figure_1", "Figure_2", "Figure_3", "Figure_4", "Figure_5", "Supplementary_Figure_S1_robustness", "Supplementary_Figure_S2_methodological_extensions"):
         for extension in ("svg", "pdf", "png", "tiff"):
             path = PKG / "figures" / f"{stem}.{extension}"
             require(path.exists() and path.stat().st_size > 0, f"Missing figure asset: {path.name}")
