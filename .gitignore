@@ -1,0 +1,30 @@
+# Local data and derived records
+work/
+outputs/
+data/
+*.csv
+*.csv.gz
+*.npz
+*.joblib
+*.pickle
+*.pkl
+*.parquet
+
+# Logs and local configuration
+*.log
+.env
+*.local
+config/environment.local
+
+# Python and editor files
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.idea/
+.vscode/
+
+# OS files
+Thumbs.db
+Desktop.ini

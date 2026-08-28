@@ -1,0 +1,11 @@
+# Copy to a local, untracked environment file and edit values for your machine.
+SICDB_PATH=F:/path/to/SICDB
+PSQL_PATH=psql
+MIMIC_WORK_DIR=./work
+MIMIC_OUTPUT_DIR=./outputs
+MIMIC_DB=mimiciv31
+EICU_DB=eicu
+PGHOST=127.0.0.1
+PGPORT=5442
+PGUSER=postgres
+# Set PGPASSWORD in the process environment; never commit it.
