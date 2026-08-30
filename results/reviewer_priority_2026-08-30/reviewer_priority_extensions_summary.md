@@ -19,12 +19,15 @@ Eligibility was determined at ICU hour 6 without requiring future ICU presence. 
 | MIMIC-IV 2020-2022 temporal test | norepinephrine_first_hgb | 236 | 0.767 (0.738-0.794) | 0.021 (0.017-0.029) | 0.00686 |
 | MIMIC-IV 2020-2022 temporal test | norepinephrine_only_hgb | 231 | 0.766 (0.736-0.796) | 0.020 (0.015-0.026) | 0.00673 |
 | MIMIC-IV 2020-2022 temporal test | availability_only_hgb | 317 | 0.671 (0.636-0.702) | 0.038 (0.027-0.051) | 0.00863 |
-| eICU-CRD | norepinephrine_first_hgb | 4,484 | 0.858 (0.853-0.863) | 0.055 (0.052-0.058) | 0.00784 |
+| MIMIC-IV 2020-2022 temporal test | missingness_only_hgb | 317 | 0.627 (0.595-0.656) | 0.031 (0.022-0.044) | 0.00860 |
+| eICU-CRD | norepinephrine_first_hgb | 4,484 | 0.858 (0.852-0.863) | 0.055 (0.052-0.058) | 0.00784 |
 | eICU-CRD | norepinephrine_only_hgb | 4,063 | 0.855 (0.850-0.861) | 0.047 (0.044-0.050) | 0.00720 |
-| eICU-CRD | availability_only_hgb | 6,297 | 0.691 (0.684-0.699) | 0.023 (0.022-0.024) | 0.01103 |
-| SICdb | norepinephrine_first_hgb | 540 | 0.701 (0.674-0.725) | 0.133 (0.113-0.157) | 0.04494 |
-| SICdb | norepinephrine_only_hgb | 539 | 0.703 (0.678-0.726) | 0.127 (0.108-0.150) | 0.04515 |
-| SICdb | availability_only_hgb | 555 | 0.538 (0.515-0.561) | 0.055 (0.049-0.062) | 0.04712 |
+| eICU-CRD | availability_only_hgb | 6,297 | 0.691 (0.685-0.698) | 0.023 (0.022-0.024) | 0.01103 |
+| eICU-CRD | missingness_only_hgb | 6,297 | 0.657 (0.650-0.664) | 0.019 (0.018-0.020) | 0.01105 |
+| SICdb | norepinephrine_first_hgb | 540 | 0.701 (0.676-0.723) | 0.133 (0.111-0.159) | 0.04494 |
+| SICdb | norepinephrine_only_hgb | 539 | 0.703 (0.678-0.725) | 0.127 (0.107-0.150) | 0.04515 |
+| SICdb | availability_only_hgb | 555 | 0.538 (0.515-0.561) | 0.055 (0.049-0.061) | 0.04712 |
+| SICdb | missingness_only_hgb | 555 | 0.510 (0.488-0.529) | 0.051 (0.047-0.057) | 0.04709 |
 
 ## Repeated held-out Brier skill
 

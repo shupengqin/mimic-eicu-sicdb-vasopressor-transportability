@@ -10,7 +10,7 @@ This repository contains SQL extraction templates, Python analysis scripts, repo
 
 The study was not prospectively preregistered. The corrected rerun used MIMIC-IV `anchor_year_group` for temporal partitioning and locked the selected algorithm, hyperparameters, and preprocessing rules before the corrected temporal and external scoring pass. External data were not used for fitting, preprocessing estimation, hyperparameter selection, or algorithm selection in that corrected rerun. Earlier exploratory project work had already inspected some external results, however. In this repository, `locked` or `frozen` therefore means no external refitting or selection during the corrected rerun; it does not mean that the investigators were prospectively blinded to every external result.
 
-The reviewer-priority analyses dated 30 August 2026 are explicitly post hoc. They test alternative estimands, first-agent composition, strict norepinephrine-only and norepinephrine-at-first outcomes, probability skill, operating policies, measurement availability, predictor quality, and hospital-level calibration heterogeneity. They do not replace the corrected primary analysis.
+The reviewer-priority analyses dated 30 August 2026 are explicitly post hoc. They test alternative estimands, first-agent composition, strict norepinephrine-only and norepinephrine-at-first outcomes, probability skill, operating policies, strict missingness-only and index-hour-plus-availability models, predictor quality, and hospital-level calibration heterogeneity. They do not replace the corrected primary analysis.
 
 ## Data access
 

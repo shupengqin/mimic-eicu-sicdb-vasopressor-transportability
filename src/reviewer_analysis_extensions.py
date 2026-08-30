@@ -75,6 +75,9 @@ CLINICAL_FEATURES = [
 AVAILABILITY_FEATURES = ["index_hour"] + [
     f"available_{feature}" for feature in CLINICAL_FEATURES
 ]
+MISSINGNESS_FEATURES = [
+    f"available_{feature}" for feature in CLINICAL_FEATURES
+]
 
 
 def require_files(paths: list[Path]) -> None:
@@ -130,6 +133,10 @@ def availability_frame(frame: pd.DataFrame) -> pd.DataFrame:
     for feature in CLINICAL_FEATURES:
         output[f"available_{feature}"] = cleaned[feature].notna().astype(np.uint8)
     return output.reindex(columns=AVAILABILITY_FEATURES)
+
+
+def missingness_frame(frame: pd.DataFrame) -> pd.DataFrame:
+    return availability_frame(frame).reindex(columns=MISSINGNESS_FEATURES)
 
 
 def grouped_event_records(record_id: np.ndarray, y: np.ndarray) -> np.ndarray:
@@ -382,6 +389,7 @@ def score_external_models(
     norepinephrine_model: object,
     norepinephrine_only_model: object,
     availability_model: object,
+    missingness_model: object,
 ) -> dict[str, dict[str, np.ndarray]]:
     mappings = {
         "eicu_external": norepinephrine_map("eicu"),
@@ -413,6 +421,9 @@ def score_external_models(
         )[:, 1].astype(np.float32),
         "p_availability": availability_model.predict_proba(
             availability_frame(sicdb)
+        )[:, 1].astype(np.float32),
+        "p_missingness": missingness_model.predict_proba(
+            missingness_frame(sicdb)
         )[:, 1].astype(np.float32),
     }
     del sicdb
@@ -449,6 +460,11 @@ def score_external_models(
         )
         parts["p_availability"].append(
             availability_model.predict_proba(availability_frame(chunk))[:, 1].astype(
+                np.float32
+            )
+        )
+        parts["p_missingness"].append(
+            missingness_model.predict_proba(missingness_frame(chunk))[:, 1].astype(
                 np.float32
             )
         )
@@ -493,6 +509,10 @@ def run_sensitivity_models() -> None:
     availability_model.fit(
         availability_frame(training), training["label"].astype(int).to_numpy()
     )
+    missingness_model = mb.build_model()
+    missingness_model.fit(
+        missingness_frame(training), training["label"].astype(int).to_numpy()
+    )
     joblib.dump(
         {
             "analysis_role": "post_hoc_norepinephrine_first_sensitivity",
@@ -528,6 +548,17 @@ def run_sensitivity_models() -> None:
         },
         rv.OUTPUTS / "reviewer_availability_only_hgb.joblib",
     )
+    joblib.dump(
+        {
+            "analysis_role": "post_hoc_missingness_only_sensitivity",
+            "model": missingness_model,
+            "feature_cols": MISSINGNESS_FEATURES,
+            "training_groups": "MIMIC-IV 2008-2019",
+            "predictors": "39 post-range-filter availability indicators; no physiologic values or index hour",
+            "external_data_used_for_fitting_or_selection": False,
+        },
+        rv.OUTPUTS / "reviewer_missingness_only_hgb.joblib",
+    )
 
     scored: dict[str, dict[str, np.ndarray]] = {}
     scored["mimic_temporal_test"] = {
@@ -553,11 +584,17 @@ def run_sensitivity_models() -> None:
         "p_availability": availability_model.predict_proba(
             availability_frame(temporal_test)
         )[:, 1].astype(np.float32),
+        "p_missingness": missingness_model.predict_proba(
+            missingness_frame(temporal_test)
+        )[:, 1].astype(np.float32),
     }
     del training, temporal_test
     scored.update(
         score_external_models(
-            norepinephrine_model, norepinephrine_only_model, availability_model
+            norepinephrine_model,
+            norepinephrine_only_model,
+            availability_model,
+            missingness_model,
         )
     )
 
@@ -600,6 +637,19 @@ def run_sensitivity_models() -> None:
                 rng,
                 {
                     "endpoint_note": "any first target vasopressor; index hour plus 39 availability indicators",
+                },
+            )
+        )
+        rows.append(
+            metric_with_clustered_ci(
+                dataset,
+                "missingness_only_hgb",
+                arrays["y_any"],
+                arrays["p_missingness"],
+                arrays["record_id"],
+                rng,
+                {
+                    "endpoint_note": "any first target vasopressor; 39 availability indicators without physiologic values or index hour",
                 },
             )
         )

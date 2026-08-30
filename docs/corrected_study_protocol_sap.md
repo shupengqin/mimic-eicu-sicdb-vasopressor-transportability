@@ -82,7 +82,7 @@ The following analyses were added after strict methodological review and must no
 - Brier skill relative to a prevalence-only forecast estimated in each 20% identifier-disjoint calibration subset and applied to the corresponding 80% evaluation subset.
 - Thresholds selected in the calibration subset to target either five alerts per 100 eligible landmark rows or 80% landmark sensitivity, followed by unchanged evaluation and six-hour suppression.
 - Complete 42-predictor model-input QC across MIMIC-IV development, model-selection, and temporal-test cohorts, eICU-CRD, and SICdb. The table reports nonmissingness, range rejection, accepted-value distributions, and the boundary created by eICU range filtering before aggregation.
-- An availability-only HGB using index hour and 39 post-range-filter availability indicators. This is not a complete measurement-process model because it omits measurement recency and sampling frequency.
+- A strict missingness-only HGB using 39 post-range-filter availability indicators and no physiologic values or index hour, plus an availability-only HGB that adds index hour. Neither is a complete measurement-process model because measurement recency and sampling frequency are omitted.
 - Descriptive random-effects synthesis of CITL and calibration slope across 73 eligible eICU hospitals using within-hospital `patienthealthsystemstayid`-clustered standard errors. CITL is analyzed on its original scale and slope on the log scale.
 
 No temporal-test or external data were used to fit or select any post hoc sensitivity model. External data were evaluated only after each post hoc model specification had been fixed. These analyses evaluate robustness and do not replace the corrected primary model-selection procedure.
