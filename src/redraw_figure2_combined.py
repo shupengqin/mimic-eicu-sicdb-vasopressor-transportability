@@ -76,10 +76,24 @@ def box(ax: plt.Axes, xy: tuple[float, float], width: float, height: float, titl
 
 def draw_design(ax: plt.Axes, selection: pd.DataFrame, cohort: pd.DataFrame) -> None:
     ax.set_axis_off()
-    # A compact left-to-right pipeline makes the estimand and freeze point explicit.
+    # The pipeline separates corrected-rerun locking from prospective blinding.
     box(ax, (0.01, 0.22), 0.19, 0.56, "Development", ["MIMIC-IV 2008-2016", "50,200 stays", "Model fitting"], BLUE_LIGHT, BLUE)
     box(ax, (0.25, 0.22), 0.22, 0.56, "Model selection", ["MIMIC-IV 2017-2019", "11,997 stays", "HGB: AUROC 0.841", "LR: AUROC 0.822"], TEAL_LIGHT, TEAL)
-    box(ax, (0.52, 0.22), 0.19, 0.56, "Frozen models", ["Refit on 2008-2019", "HGB selected", "No validation data"], "white", BLUE)
+    box(
+        ax,
+        (0.52, 0.22),
+        0.19,
+        0.56,
+        "Corrected-rerun lock",
+        [
+            "Refit: MIMIC 2008-2019",
+            "HGB selected in MIMIC",
+            "No validation-data fitting",
+            "or selection in this rerun",
+        ],
+        "white",
+        BLUE,
+    )
     cohort = cohort.set_index("dataset")
     outputs = [(0.80, 0.62, "MIMIC-IV 2020-2022", f"{int(cohort.loc['mimic_temporal_test_2020_2022', 'n_stays']):,} stays", BLUE_LIGHT),
                (0.80, 0.42, "eICU-CRD", f"{int(cohort.loc['eicu_external', 'n_stays']):,} stays", "white"),
@@ -92,10 +106,33 @@ def draw_design(ax: plt.Axes, selection: pd.DataFrame, cohort: pd.DataFrame) -> 
     for y in (0.685, 0.485, 0.285):
         ax.add_patch(FancyArrowPatch((0.71, 0.50), (0.80, y), arrowstyle="-|>", mutation_scale=10,
                                      linewidth=0.9, color=BLUE))
-    ax.text(0.50, 0.10, "Frozen models were scored without refitting in temporal or external cohorts.",
-            fontsize=6.8, color=TEXT, ha="center", va="center")
-    ax.text(0.50, 0.045, "Outcome: first documented continuous vasopressor initiation within 6 h.", fontsize=6.8,
-            color=TEXT, ha="center", va="center")
+    ax.text(
+        0.50,
+        0.135,
+        "Corrected rerun: models were scored without external refitting or selection.",
+        fontsize=6.3,
+        color=TEXT,
+        ha="center",
+        va="center",
+    )
+    ax.text(
+        0.50,
+        0.085,
+        "Earlier exploratory project work had inspected some external results.",
+        fontsize=6.3,
+        color=TEXT,
+        ha="center",
+        va="center",
+    )
+    ax.text(
+        0.50,
+        0.035,
+        "Outcome: first documented continuous vasopressor initiation within 6 h.",
+        fontsize=6.3,
+        color=TEXT,
+        ha="center",
+        va="center",
+    )
     ax.set_xlim(0, 1.0)
     ax.set_ylim(0, 0.88)
 
