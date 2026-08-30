@@ -1,0 +1,41 @@
+dataset,dataset_label,measure,mutually_exclusive,n_event_positive_stays,n,percent
+mimic_development,MIMIC-IV 2008-2016 development,norepinephrine_only,True,3512,1279,36.41799544419134
+mimic_development,MIMIC-IV 2008-2016 development,phenylephrine_only,True,3512,1711,48.71867881548975
+mimic_development,MIMIC-IV 2008-2016 development,epinephrine_only,True,3512,105,2.989749430523918
+mimic_development,MIMIC-IV 2008-2016 development,vasopressin_only,True,3512,44,1.2528473804100229
+mimic_development,MIMIC-IV 2008-2016 development,dopamine_only,True,3512,204,5.808656036446469
+mimic_development,MIMIC-IV 2008-2016 development,concurrent_multiple,True,3512,169,4.812072892938496
+mimic_development,MIMIC-IV 2008-2016 development,unmatched_or_unclassified,True,3512,0,0.0
+mimic_development,MIMIC-IV 2008-2016 development,norepinephrine_included_at_first,False,3512,1366,38.89521640091116
+mimic_selection,MIMIC-IV 2017-2019 model selection,norepinephrine_only,True,866,480,55.42725173210162
+mimic_selection,MIMIC-IV 2017-2019 model selection,phenylephrine_only,True,866,234,27.02078521939954
+mimic_selection,MIMIC-IV 2017-2019 model selection,epinephrine_only,True,866,57,6.581986143187067
+mimic_selection,MIMIC-IV 2017-2019 model selection,vasopressin_only,True,866,25,2.886836027713626
+mimic_selection,MIMIC-IV 2017-2019 model selection,dopamine_only,True,866,12,1.3856812933025404
+mimic_selection,MIMIC-IV 2017-2019 model selection,concurrent_multiple,True,866,58,6.697459584295612
+mimic_selection,MIMIC-IV 2017-2019 model selection,unmatched_or_unclassified,True,866,0,0.0
+mimic_selection,MIMIC-IV 2017-2019 model selection,norepinephrine_included_at_first,False,866,519,59.930715935334874
+mimic_temporal_test,MIMIC-IV 2020-2022 temporal test,norepinephrine_only,True,317,231,72.87066246056783
+mimic_temporal_test,MIMIC-IV 2020-2022 temporal test,phenylephrine_only,True,317,40,12.618296529968454
+mimic_temporal_test,MIMIC-IV 2020-2022 temporal test,epinephrine_only,True,317,14,4.416403785488959
+mimic_temporal_test,MIMIC-IV 2020-2022 temporal test,vasopressin_only,True,317,14,4.416403785488959
+mimic_temporal_test,MIMIC-IV 2020-2022 temporal test,dopamine_only,True,317,2,0.6309148264984227
+mimic_temporal_test,MIMIC-IV 2020-2022 temporal test,concurrent_multiple,True,317,16,5.047318611987381
+mimic_temporal_test,MIMIC-IV 2020-2022 temporal test,unmatched_or_unclassified,True,317,0,0.0
+mimic_temporal_test,MIMIC-IV 2020-2022 temporal test,norepinephrine_included_at_first,False,317,236,74.44794952681389
+eicu_external,eICU-CRD,norepinephrine_only,True,6297,4063,64.52278862950611
+eicu_external,eICU-CRD,phenylephrine_only,True,6297,914,14.514848340479594
+eicu_external,eICU-CRD,epinephrine_only,True,6297,135,2.143878037160553
+eicu_external,eICU-CRD,vasopressin_only,True,6297,87,1.3816102906145784
+eicu_external,eICU-CRD,dopamine_only,True,6297,587,9.321899317135143
+eicu_external,eICU-CRD,concurrent_multiple,True,6297,511,8.114975385104017
+eicu_external,eICU-CRD,unmatched_or_unclassified,True,6297,0,0.0
+eicu_external,eICU-CRD,norepinephrine_included_at_first,False,6297,4484,71.20851198983642
+sicdb_external,SICdb,norepinephrine_only,True,555,539,97.11711711711712
+sicdb_external,SICdb,phenylephrine_only,True,555,13,2.3423423423423424
+sicdb_external,SICdb,epinephrine_only,True,555,1,0.18018018018018017
+sicdb_external,SICdb,vasopressin_only,True,555,1,0.18018018018018017
+sicdb_external,SICdb,dopamine_only,True,555,0,0.0
+sicdb_external,SICdb,concurrent_multiple,True,555,1,0.18018018018018017
+sicdb_external,SICdb,unmatched_or_unclassified,True,555,0,0.0
+sicdb_external,SICdb,norepinephrine_included_at_first,False,555,540,97.29729729729729

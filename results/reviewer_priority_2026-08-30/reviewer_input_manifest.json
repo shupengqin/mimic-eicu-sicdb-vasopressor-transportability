@@ -1,0 +1,37 @@
+{
+  "generated_at_utc": "2026-08-30T14:02:23.173518+00:00",
+  "analysis_status": "post_hoc_reviewer_priority_inputs",
+  "redistribution": "local_only_patient_level_inputs",
+  "files": [
+    {
+      "name": "reviewer_mimic_first_agent.csv",
+      "bytes": 2438769,
+      "sha256": "273f64a04349f0ac7736251d89678067c322941dbf0a65485d7a3f0cfe6868a7"
+    },
+    {
+      "name": "reviewer_eicu_first_agent.csv",
+      "bytes": 1591590,
+      "sha256": "110b29332ffe8f53bf7ab20f34614308685d0a0208c1ac47420f41ae41551a59"
+    },
+    {
+      "name": "reviewer_sicdb_first_agent.csv",
+      "bytes": 345303,
+      "sha256": "1cd76082c24a1f4d256fd9a23baa04eeac83d4f6306f04d160edbc57c7b33315"
+    },
+    {
+      "name": "reviewer_mimic_hour6_competing_exit.csv",
+      "bytes": 20793392,
+      "sha256": "762352aefd9fbedde8f82407057f97c8a0524d3366525846a514bd056034d766"
+    },
+    {
+      "name": "reviewer_eicu_hour6_competing_exit.csv",
+      "bytes": 44855515,
+      "sha256": "a927f3a73569b7c13eaa1323e26644cafb8d6292db63889ece5e3aba1e91d4e3"
+    },
+    {
+      "name": "reviewer_sicdb_hour6_competing_exit.csv",
+      "bytes": 1570076,
+      "sha256": "c9b0cdc3e4776f8b3c59cab4806c86bc92c9c34e7ac095f48866dd43a0e7e059"
+    }
+  ]
+}

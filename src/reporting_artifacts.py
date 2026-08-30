@@ -113,7 +113,7 @@ def eicu_missingness() -> dict:
 def main() -> None:
     mimic = rv.read_csv_samples(rv.WORK / "mimic_samples_anchor.csv")
     development, selection, temporal = rv.split_mimic_eras(mimic)
-    sicdb = rv.read_csv_samples(rv.WORK / "sicdb_samples_main_units_rr.csv")
+    sicdb = rv.read_csv_samples(rv.WORK / "sicdb_samples_main_units.csv")
     cohort_rows = [
         summarize_stays(development, "mimic_development_2008_2016"),
         summarize_stays(selection, "mimic_model_selection_2017_2019"),
@@ -172,10 +172,13 @@ def main() -> None:
         "bootstrap_replicates": 500,
         "mimic_extract_sql_sha256": sha256(rv.WORK / "mimic_extract.sql"),
         "eicu_extract_sql_sha256": sha256(rv.WORK / "eicu_extract.sql"),
-        "corrected_modeling_sha256": sha256(rv.WORK / "corrected_modeling.py"),
-        "clustered_inference_sha256": sha256(rv.WORK / "clustered_inference.py"),
-        "local_recalibration_sha256": sha256(rv.WORK / "local_recalibration.py"),
-        "corrected_supplementary_sha256": sha256(rv.WORK / "corrected_supplementary.py"),
+        # Hash the scripts that were actually executed from the repository.
+        # Earlier versions looked for copied files in the temporary extract
+        # directory, which made the provenance manifest fail on a clean run.
+        "corrected_modeling_sha256": sha256(Path(__file__).with_name("corrected_modeling.py")),
+        "clustered_inference_sha256": sha256(Path(__file__).with_name("clustered_inference.py")),
+        "local_recalibration_sha256": sha256(Path(__file__).with_name("local_recalibration.py")),
+        "corrected_supplementary_sha256": sha256(Path(__file__).with_name("corrected_supplementary.py")),
         "python": platform.python_version(),
         "pandas": pd.__version__,
         "numpy": np.__version__,

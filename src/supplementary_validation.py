@@ -20,7 +20,7 @@ def run_eicu_hospital_metrics(model: object, prefix: str = "") -> None:
     site_map = site_map.dropna(subset=["record_id"]).copy()
     site_lookup = site_map.set_index("record_id")["hospital_id"].to_dict()
     buckets = {}
-    for chunk in rv.iter_csv_chunks(rv.WORK / "eicu_samples.csv"):
+    for chunk in rv.iter_csv_chunks(rv.EICU_SAMPLES):
         chunk = chunk.reset_index(drop=True)
         hospitals = chunk["record_id"].map(site_lookup).fillna(-1).astype(int)
         p = model.predict_proba(rv.feature_frame(chunk))[:, 1]

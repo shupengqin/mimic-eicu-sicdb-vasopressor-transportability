@@ -158,14 +158,15 @@ def panel_hospital_calibration(ax: plt.Axes) -> None:
     ax.axhline(0, color=GREY, linestyle="--", linewidth=0.8)
     ax.set_xlabel("Hospital calibration slope")
     ax.set_ylabel("Hospital CITL")
-    ax.set_title("eICU hospital calibration", fontsize=8, pad=5)
+    # Keep the count annotation outside the plotting region so that it cannot
+    # obscure the upper-tail hospital points at high CITL values.
+    n_hospitals = len(data)
+    ax.set_title(f"eICU hospital calibration\n{n_hospitals} hospitals with adequate event counts", fontsize=8, pad=5)
     ax.set_xlim(0.60, 1.75)
     ax.set_ylim(-1.10, 1.65)
     ax.grid(color=LIGHT, linewidth=0.45)
     ax.set_axisbelow(True)
     label_panel(ax, "d")
-    ax.text(0.03, 0.96, "73 hospitals with adequate event counts", transform=ax.transAxes,
-            va="top", fontsize=6.3, color=TEXT)
 
 
 def main() -> None:

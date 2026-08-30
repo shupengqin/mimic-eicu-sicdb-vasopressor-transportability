@@ -87,11 +87,14 @@ def threshold_rows(
                 "dataset": dataset,
                 "calibration": calibration,
                 "threshold": threshold,
+                "analysis_unit": "eligible_landmark",
+                "landmarks_repeated_within_stay": True,
+                "n_eligible_landmark_hours": len(y),
                 "sensitivity": tp / (tp + fn) if tp + fn else np.nan,
                 "specificity": tn / (tn + fp) if tn + fp else np.nan,
                 "ppv": tp / (tp + fp) if tp + fp else np.nan,
-                "alerts_per_100_patient_hours": (tp + fp) / len(y) * 100,
-                "false_alerts_per_100_patient_hours": fp / len(y) * 100,
+                "alerts_per_100_eligible_landmark_hours": (tp + fp) / len(y) * 100,
+                "false_alerts_per_100_eligible_landmark_hours": fp / len(y) * 100,
             }
         )
     return rows
@@ -115,6 +118,9 @@ def dca_rows(
                 "dataset": dataset,
                 "calibration": calibration,
                 "threshold": threshold,
+                "analysis_unit": "eligible_landmark",
+                "landmarks_repeated_within_stay": True,
+                "n_eligible_landmark_hours": n,
                 "net_benefit_model": tp / n - fp / n * threshold / (1 - threshold),
                 "net_benefit_treat_all": prevalence - (1 - prevalence) * threshold / (1 - threshold),
                 "net_benefit_treat_none": 0.0,

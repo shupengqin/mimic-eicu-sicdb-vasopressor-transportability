@@ -17,7 +17,7 @@ import run_validation as rv
 def evaluate() -> None:
     model = joblib.load(rv.OUTPUTS / "mimic_hgb_frozen_model.joblib")["model"]
     rows = []
-    mimic = rv.read_csv_samples(rv.WORK / "mimic_samples.csv")
+    mimic = rv.read_csv_samples(rv.WORK / "mimic_samples_anchor.csv")
     for dataset, subset in [
         ("mimic_development", mimic[mimic.time_year.le(2177)]),
         ("mimic_temporal", mimic[mimic.time_year.ge(2178)]),
@@ -32,7 +32,7 @@ def evaluate() -> None:
     rows.append(metrics)
 
     y_parts, p_parts, record_parts, lead_parts = [], [], [], []
-    for chunk in rv.iter_csv_chunks(rv.WORK / "eicu_samples.csv"):
+    for chunk in rv.iter_csv_chunks(rv.EICU_SAMPLES):
         clean = pa.strict_frame(chunk)
         y_parts.append(clean["label"].astype(int).to_numpy())
         p_parts.append(model.predict_proba(rv.feature_frame(clean))[:, 1])

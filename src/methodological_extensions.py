@@ -35,7 +35,7 @@ DATASET_LABELS = {
 SOURCE_PATHS = {
     "mimic_temporal_test": rv.WORK / "mimic_samples_anchor.csv",
     "eicu_external": rv.EICU_SAMPLES,
-    "sicdb_external": rv.WORK / "sicdb_samples_main_units_rr.csv",
+    "sicdb_external": rv.WORK / "sicdb_samples_main_units.csv",
 }
 META_COLUMNS = ["record_id", "patient_id", "index_hour", "label"]
 VITAL_FEATURES = ["age", "sex_male", "index_hour"] + [
@@ -310,7 +310,7 @@ def rule_metrics(y: np.ndarray, alert: np.ndarray) -> dict[str, float]:
         "sensitivity": tp / (tp + fn) if tp + fn else np.nan,
         "specificity": tn / (tn + fp) if tn + fp else np.nan,
         "ppv": tp / (tp + fp) if tp + fp else np.nan,
-        "false_alerts_per_100_patient_hours": fp / len(y) * 100,
+        "false_alerts_per_100_eligible_landmark_hours": fp / len(y) * 100,
     }
 
 
@@ -533,7 +533,7 @@ def repeated_recalibration(rng: np.random.Generator) -> pd.DataFrame:
                 fn = int(np.sum(~alert & (evaluation_y == 1)))
                 metrics[f"brier_{label}"] = float(brier_score_loss(evaluation_y, probability))
                 metrics[f"sensitivity_at_0_05_{label}"] = tp / (tp + fn) if tp + fn else np.nan
-                metrics[f"false_alerts_per_100h_at_0_05_{label}"] = fp / len(evaluation_y) * 100
+                metrics[f"false_alerts_per_100_eligible_landmark_hours_at_0_05_{label}"] = fp / len(evaluation_y) * 100
             rows.append(
                 {
                     "dataset": dataset,
@@ -598,14 +598,14 @@ def summarize(
             "",
             "## Fixed clinical rules",
             "",
-            "| Dataset | Rule | Sensitivity | Specificity | PPV | False alerts/100 h |",
+            "| Dataset | Rule | Sensitivity | Specificity | PPV | False alerts/100 eligible landmark-hours |",
             "| --- | --- | ---: | ---: | ---: | ---: |",
         ]
     )
     for row in rules.itertuples(index=False):
         lines.append(
             f"| {DATASET_LABELS[row.dataset]} | {row.rule} | {row.sensitivity:.3f} | {row.specificity:.3f} | "
-            f"{row.ppv:.3f} | {row.false_alerts_per_100_patient_hours:.2f} |"
+            f"{row.ppv:.3f} | {row.false_alerts_per_100_eligible_landmark_hours:.2f} |"
         )
 
     lines.extend(

@@ -1,3 +1,6 @@
+-- Post hoc prediction-time-identifiable ICU-hour-6 estimand. Eligibility is
+-- determined from information available at hour 6. Unit exit before hour 12
+-- is treated as a competing outcome rather than as missing future follow-up.
 \set ON_ERROR_STOP on
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -16,7 +19,7 @@ SELECT
     p.unitdischargeoffset
 FROM patient AS p
 WHERE (p.age = '> 89' OR (p.age ~ '^[0-9]+$' AND p.age::int >= 18))
-  AND p.unitdischargeoffset >= 12 * 60;
+  AND p.unitdischargeoffset > 6 * 60;
 CREATE INDEX eicu_base_stay_idx ON eicu_base(patientunitstayid);
 ANALYZE eicu_base;
 
@@ -44,14 +47,14 @@ SELECT
     b.age,
     b.hospitalid,
     b.unit_name,
+    b.unitdischargeoffset,
     g.index_hour,
     g.index_hour * 60 AS index_offset,
     p.first_start
 FROM eicu_base AS b
 LEFT JOIN eicu_pressor AS p USING (patientunitstayid)
-CROSS JOIN LATERAL generate_series(6, 24) AS g(index_hour)
-WHERE b.unitdischargeoffset >= (g.index_hour + 6) * 60
-  AND (p.first_start IS NULL OR p.first_start >= g.index_hour * 60);
+CROSS JOIN LATERAL (VALUES (6)) AS g(index_hour)
+WHERE p.first_start IS NULL OR p.first_start >= g.index_hour * 60;
 CREATE INDEX eicu_grid_stay_idx ON eicu_grid(patientunitstayid);
 ANALYZE eicu_grid;
 
@@ -252,8 +255,17 @@ SELECT
     s.index_hour::int AS index_hour,
     s.age::double precision AS age,
     CASE WHEN lower(btrim(s.gender)) LIKE 'm%' THEN 1.0 WHEN lower(btrim(s.gender)) LIKE 'f%' THEN 0.0 ELSE NULL END AS sex_male,
-    CASE WHEN s.first_start IS NOT NULL AND s.first_start < s.index_offset + 6 * 60 THEN 1 ELSE 0 END AS label,
-    CASE WHEN s.first_start IS NULL THEN NULL ELSE (s.first_start - s.index_offset) / 60.0 END AS lead_time_hours,
+    CASE WHEN s.first_start IS NOT NULL
+              AND s.first_start < LEAST(s.index_offset + 6 * 60, s.unitdischargeoffset)
+         THEN 1 ELSE 0 END AS label,
+    CASE WHEN s.first_start IS NOT NULL
+              AND s.first_start < LEAST(s.index_offset + 6 * 60, s.unitdischargeoffset)
+         THEN (s.first_start - s.index_offset) / 60.0
+         ELSE NULL END AS lead_time_hours,
+    LEAST(6.0, (s.unitdischargeoffset - s.index_offset) / 60.0) AS observed_horizon_hours,
+    CASE WHEN s.unitdischargeoffset < s.index_offset + 6 * 60
+              AND (s.first_start IS NULL OR s.first_start >= s.unitdischargeoffset)
+         THEN 1 ELSE 0 END AS competing_exit,
     v.hr_last, v.hr_mean6, v.hr_min6, v.hr_max6,
     v.sbp_last, v.sbp_mean6, v.sbp_min6, v.sbp_max6,
     v.dbp_last, v.dbp_mean6, v.dbp_min6, v.dbp_max6,

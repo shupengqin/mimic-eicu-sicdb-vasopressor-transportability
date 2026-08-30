@@ -68,7 +68,7 @@ def eicu_hospitals() -> None:
 
 def sicdb_units_and_all() -> None:
     model = joblib.load(rv.OUTPUTS / "corrected_primary_model.joblib")["model"]
-    main = rv.read_csv_samples(rv.WORK / "sicdb_samples_main_units_rr.csv")
+    main = rv.read_csv_samples(rv.WORK / "sicdb_samples_main_units.csv")
     rows = []
     for unit, frame in main.groupby("unit_name", sort=True):
         metrics, _, _ = rv.evaluate_frame(f"sicdb_{unit}", frame, model)
@@ -76,7 +76,7 @@ def sicdb_units_and_all() -> None:
         rows.append(metrics)
     pd.DataFrame(rows).to_csv(rv.OUTPUTS / "corrected_sicdb_unit_metrics.csv", index=False)
 
-    all_units = rv.read_csv_samples(rv.WORK / "sicdb_samples_all_units_rr.csv")
+    all_units = rv.read_csv_samples(rv.WORK / "sicdb_samples_all_units.csv")
     metrics, curve, quality = rv.evaluate_frame("sicdb_all_units_sensitivity", all_units, model)
     pd.DataFrame([metrics]).to_csv(rv.OUTPUTS / "corrected_sicdb_all_units_metrics.csv", index=False)
     pd.DataFrame(curve).to_csv(rv.OUTPUTS / "corrected_sicdb_all_units_decision_curve.csv", index=False)

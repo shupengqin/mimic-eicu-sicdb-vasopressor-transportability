@@ -309,7 +309,7 @@ def q1q3(r: dict[str, str]) -> str:
 
 
 def table_1() -> tuple[list[str], list[list[str]]]:
-    header = ["Cohort", "Stays", "Patients", "Age, median (IQR)", "Male stays (%)", "Event-positive stays (n)", "Event-positive stays (%)", "Landmarks (n)", "Positive landmarks (%)"]
+    header = ["Cohort", "Stays", "Unique linkage IDs", "Age, median (IQR)", "Male stays (%)", "Event-positive stays (n)", "Event-positive stays (%)", "Landmarks (n)", "Positive landmarks (%)"]
     data = []
     for r in rows("corrected_table1_cohort_summary.csv"):
         data.append([
@@ -321,7 +321,7 @@ def table_1() -> tuple[list[str], list[list[str]]]:
 
 
 def table_2() -> tuple[list[str], list[list[str]]]:
-    header = ["Cohort", "Model", "Landmarks / stays", "Positive landmarks", "AUROC (95% CI)", "AUPRC (95% CI)", "Brier (95% CI)", "CITL (95% CI)", "Calibration slope (95% CI)"]
+    header = ["Cohort", "Model", "Landmarks / stays", "Event-positive stays (%)", "AUROC (95% CI)", "AUPRC (95% CI)", "Brier (95% CI)", "CITL (95% CI)", "Calibration slope (95% CI)"]
     data = []
     for r in rows("corrected_clustered_confidence_intervals.csv"):
         data.append([
@@ -348,14 +348,15 @@ def table_3() -> tuple[list[str], list[list[str]]]:
         ])
     hospital = next(row for row in rows("corrected_hierarchical_cluster_metrics.csv") if row["cluster_level"] == "hospital_id")
     data.append([
-        "Hospital bootstrap", "eICU-CRD (208 hospitals)", integer(hospital["n_landmarks"]), integer(hospital["n_clusters"]),
+        "Hospital bootstrap", "eICU-CRD (all 208 hospitals)", integer(hospital["n_landmarks"]), integer(hospital["n_clusters"]),
         ci_clustered(hospital, "brier", 5), ci_clustered(hospital, "calibration_in_the_large"), ci_clustered(hospital, "calibration_slope"),
     ])
     summary = {row["metric"]: row for row in rows("corrected_eicu_hospital_calibration_summary.csv")}
+    hospitals = rows("corrected_eicu_hospital_metrics.csv")
     citl = summary["calibration_in_the_large"]
     slope = summary["calibration_slope"]
     data.append([
-        "Descriptive hospital range", "eICU-CRD (73 hospitals)", "Not applicable", "73",
+        "Descriptive hospital range", f"eICU-CRD ({len(hospitals)} hospitals)", "Not applicable", str(len(hospitals)),
         "Not estimated", f"Median {float(citl['median']):.3f} (range {float(citl['minimum']):.3f} to {float(citl['maximum']):.3f})",
         f"Median {float(slope['median']):.3f} (range {float(slope['minimum']):.3f} to {float(slope['maximum']):.3f})",
     ])
@@ -389,7 +390,7 @@ def table_4() -> tuple[list[str], list[list[str]]]:
 
 
 def table_5() -> tuple[list[str], list[list[str]]]:
-    header = ["Cohort", "Calibration", "Cutoff", "Sens.", "Spec.", "PPV", "False alerts / 100 patient-hours", "6-h suppression event-stay sensitivity", "Episode PPV", "False episodes / 100 patient-days"]
+    header = ["Cohort", "Calibration", "Cutoff", "Sens.", "Spec.", "PPV", "False alerts / 100 eligible landmark-hours", "6-h suppression event-stay sensitivity", "Episode PPV", "False episodes / 100 eligible landmark-hours"]
     threshold_rows = [r for r in rows("corrected_threshold_analysis.csv") if r["threshold"] == "0.05"]
     suppression = {
         (r["dataset"], r["calibration"]): r
@@ -401,8 +402,8 @@ def table_5() -> tuple[list[str], list[list[str]]]:
         s = suppression[(r["dataset"], r["calibration"])]
         data.append([
             label_dataset(r["dataset"]), "Uncalibrated" if r["calibration"] == "uncalibrated" else "Intercept recalibrated", "0.05",
-            f(r["sensitivity"]), f(r["specificity"]), f(r["ppv"]), f(r["false_alerts_per_100_patient_hours"], 2),
-            f(s["event_stay_sensitivity"]), f(s["episode_ppv"]), f(s["false_alert_episodes_per_100_patient_days"], 2),
+            f(r["sensitivity"]), f(r["specificity"]), f(r["ppv"]), f(r["false_alerts_per_100_eligible_landmark_hours"], 2),
+            f(s["event_stay_sensitivity"]), f(s["episode_ppv"]), f(s["false_alert_episodes_per_100_eligible_landmark_hours"], 2),
         ])
     return header, data
 
@@ -516,10 +517,10 @@ def supplementary_7() -> tuple[tuple[list[str], list[list[str]]], tuple[list[str
 
 
 def supplementary_8() -> tuple[list[str], list[list[str]]]:
-    header = ["Database", "Calibration", "Threshold", "Suppression", "Landmarks", "Event stays", "Alert episodes", "True episodes", "False episodes", "Event-stay sensitivity", "Episode PPV", "False episodes / 100 patient-days"]
+    header = ["Database", "Calibration", "Threshold", "Suppression", "Landmarks", "Event stays", "Alert episodes", "True episodes", "False episodes", "Event-stay sensitivity", "Episode PPV", "False episodes / 100 eligible landmark-hours"]
     data = []
     for r in rows("corrected_alert_suppression_metrics.csv"):
-        data.append([label_dataset(r["dataset"]), r["calibration"], f(r["threshold"], 2), f(r["suppression_hours"], 0) + " h", integer(r["n_landmarks"]), integer(r["n_event_stays"]), integer(r["alert_episodes"]), integer(r["true_alert_episodes"]), integer(r["false_alert_episodes"]), f(r["event_stay_sensitivity"], 3), f(r["episode_ppv"], 3), f(r["false_alert_episodes_per_100_patient_days"], 2)])
+        data.append([label_dataset(r["dataset"]), r["calibration"], f(r["threshold"], 2), f(r["suppression_hours"], 0) + " h", integer(r["n_landmarks"]), integer(r["n_event_stays"]), integer(r["alert_episodes"]), integer(r["true_alert_episodes"]), integer(r["false_alert_episodes"]), f(r["event_stay_sensitivity"], 3), f(r["episode_ppv"], 3), f(r["false_alert_episodes_per_100_eligible_landmark_hours"], 2)])
     return header, data
 
 

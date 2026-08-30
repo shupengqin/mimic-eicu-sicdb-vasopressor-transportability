@@ -26,12 +26,14 @@ MANUSCRIPT_LINE_SPACING = 1.5
 
 
 AUTHORS = [
-    ("Pengqin Shu", "1", "#"),
-    ("Xiaoye Xu", "2", "#"),
-    ("Fei Ying", "1", "#"),
-    ("Jing Sun", "1", "#"),
-    ("Zhao Liu", "1", ""),
-    ("Tielong Chen", "1", "*"),
+    ("Xiaoye Xu", "1", "#"),
+    ("Tielong Chen", "2", "#"),
+    ("Fei Ying", "2", "#"),
+    ("Zhao Liu", "2", "#"),
+    ("Jing Sun", "2", ""),
+    ("Cheng Bao", "2", ""),
+    ("Chao Chen", "2", ""),
+    ("Pengqin Shu", "2", "*"),
 ]
 
 TITLE = "Transportability and calibration of an hourly model for impending continuous vasopressor initiation across MIMIC-IV, eICU-CRD, and SICdb"
@@ -230,7 +232,13 @@ def clean_inline(text: str) -> str:
 
 def manuscript_source() -> str:
     source = (OUT / "corrected_manuscript_draft.md").read_text(encoding="utf-8")
-    return source.split("## Reference anchors for final reference-manager import", 1)[0].rstrip()
+    source = source.split("## Reference anchors for final reference-manager import", 1)[0].rstrip()
+    # The generator writes title, author, affiliation, and administrative
+    # metadata itself.  Start the imported manuscript body at the abstract so
+    # those blocks are not duplicated in the submission DOCX or Markdown.
+    if "## Abstract" in source:
+        source = "## Abstract" + source.split("## Abstract", 1)[1]
+    return source.rstrip()
 
 
 def parse_manuscript() -> tuple[str, list[tuple[str, str]]]:
@@ -286,15 +294,15 @@ def add_author_block(doc: Document) -> None:
         if i < len(AUTHORS) - 1:
             comma = p.add_run(", ")
             set_run(comma, 12)
-    add_para(doc, "1 Hangzhou TCM Hospital Affiliated with Zhejiang Chinese Medical University, Hangzhou, Zhejiang, China.", WD_ALIGN_PARAGRAPH.CENTER, spacing=1.0)
-    add_para(doc, "2 Affiliated Mental Health Center & Hangzhou Seventh People's Hospital, Zhejiang University School of Medicine, Zhejiang, China.", WD_ALIGN_PARAGRAPH.CENTER, spacing=1.0)
+    add_para(doc, "1 Affiliated Mental Health Center & Hangzhou Seventh People's Hospital, Zhejiang University School of Medicine, Hangzhou, Zhejiang, China.", WD_ALIGN_PARAGRAPH.CENTER, spacing=1.0)
+    add_para(doc, "2 Hangzhou TCM Hospital Affiliated with Zhejiang Chinese Medical University, Hangzhou, Zhejiang, China.", WD_ALIGN_PARAGRAPH.CENTER, spacing=1.0)
     add_para(doc, "# These authors contributed equally to this work and share first authorship.", WD_ALIGN_PARAGRAPH.CENTER, spacing=1.0)
 
 
 def add_corresponding_author(doc: Document) -> None:
     add_para(
         doc,
-        "*Corresponding author: Tielong Chen, Hangzhou Traditional Chinese Medicine Hospital Affiliated with Zhejiang Chinese Medical University, No. 453 Tiyuchang Road, Xihu District, Hangzhou City, Zhejiang Province, China. Email: ctlktz@163.com.",
+        "*Corresponding author: Pengqin Shu, Hangzhou Traditional Chinese Medicine Hospital Affiliated with Zhejiang Chinese Medical University, No. 453 Tiyuchang Road, Xihu District, Hangzhou City, Zhejiang Province, China. Email: shupengqin@163.com.",
         WD_ALIGN_PARAGRAPH.CENTER,
         spacing=1.0,
     )
@@ -308,24 +316,26 @@ def write_title_page() -> None:
     add_author_block(doc)
     doc.add_paragraph()
     add_para(doc, "Corresponding author", bold=True, spacing=1.0)
-    add_para(doc, "Tielong Chen", spacing=1.0)
+    add_para(doc, "Pengqin Shu", spacing=1.0)
     add_para(doc, "Hangzhou Traditional Chinese Medicine Hospital Affiliated with Zhejiang Chinese Medical University", spacing=1.0)
     add_para(doc, "No. 453 Tiyuchang Road, Xihu District, Hangzhou City, Zhejiang Province, China", spacing=1.0)
-    add_para(doc, "Email: ctlktz@163.com", spacing=1.0)
+    add_para(doc, "Email: shupengqin@163.com", spacing=1.0)
     doc.add_paragraph()
     add_para(doc, "Keywords: transportability; critical care; vasopressor initiation; machine learning; calibration; external validation; MIMIC-IV; eICU-CRD; SICdb", spacing=1.0)
-    add_para(doc, "Funding: No financial support was received for this work.", spacing=1.0)
-    add_para(doc, "Conflicts of interest: None declared.", spacing=1.0)
-    add_para(doc, "Ethics: [AUTHOR_INPUT_NEEDED: provide the institutional review board or ethics committee determination, waiver of informed consent, and approval identifier if applicable.]", spacing=1.0)
+    add_para(doc, "Funding: This study was supported by the grants listed in the manuscript.", spacing=1.0)
+    add_para(doc, "Conflicts of interest: The authors declare no competing interests.", spacing=1.0)
+    add_para(doc, "Ethics: This retrospective study used de-identified data and was exempt from institutional ethics review; no direct patient contact or identifiable information was involved, and informed consent was not required.", spacing=1.0)
     add_para(doc, "Patient and public involvement: [AUTHOR_CONFIRMATION_NEEDED]", spacing=1.0)
     add_para(doc, "Proposed CRediT author contribution statement (to be confirmed by all authors)", bold=True, spacing=1.0)
     contributions = [
-        "Pengqin Shu: Conceptualization, data curation, formal analysis, investigation, methodology, software, visualization, writing - original draft.",
-        "Xiaoye Xu: Conceptualization, data curation, formal analysis, methodology, validation, writing - original draft.",
-        "Fei Ying: Data curation, investigation, validation, writing - review and editing.",
-        "Jing Sun: Data curation, investigation, validation, writing - review and editing.",
-        "Zhao Liu: Methodology, statistical analysis, software, supervision, writing - review and editing.",
-        "Tielong Chen: Conceptualization, methodology, project administration, supervision, writing - review and editing.",
+        "Xiaoye Xu: Methodology, investigation, data interpretation, writing - review and editing.",
+        "Tielong Chen: Methodology, data curation, validation, clinical interpretation, writing - original draft and review and editing.",
+        "Fei Ying: Formal analysis support, validation, writing - review and editing.",
+        "Zhao Liu: Visualization, software support, writing - review and editing.",
+        "Jing Sun: Data curation, clinical interpretation, writing - review and editing.",
+        "Cheng Bao: Formal analysis support, writing - review and editing.",
+        "Chao Chen: Data curation, clinical interpretation, writing - review and editing.",
+        "Pengqin Shu: Conceptualization, study design, methodology, formal analysis, software, visualization, writing - original draft, project administration, and final review and editing.",
     ]
     for item in contributions:
         add_para(doc, item, spacing=1.0)
@@ -336,7 +346,7 @@ def write_title_page() -> None:
 
 def write_cover_letter() -> None:
     date = "26 August 2026"
-    text = f"""{date}\n\nThe Editor-in-Chief\n[Target Journal]\n\nDear Editor-in-Chief,\n\nWe submit our manuscript entitled \"{TITLE}\" for consideration as an original research article in [Target Journal].\n\nThis retrospective landmark study evaluates whether an hourly model for first documented continuous vasopressor initiation transports across temporal drift, a large US multicenter network, and an Austrian ICU database. The model was developed and selected using temporally separated MIMIC-IV cohorts, frozen before testing, and evaluated with discrimination, calibration, held-out local recalibration, hospital-level heterogeneity, alternative landmark estimands, clinical comparators, and an actionability-gap sensitivity analysis. The central finding is that patient ranking transported better than absolute risk: HGB AUROC was 0.763 in the MIMIC-IV 2020-2022 temporal test, 0.838 in eICU-CRD, and 0.696 in SICdb, while calibration slopes and threshold-related alert burden varied substantially by setting. These results provide a practical evaluation framework for deciding when local calibration and threshold assessment are necessary before prospective silent testing.\n\nThe manuscript is deliberately framed as a transportability and calibration study. It does not claim a novel vasopressor endpoint, clinical effectiveness, deployment readiness, or universal alert threshold. The analysis follows TRIPOD+AI-oriented reporting principles, treats the ICU or unit stay as the inference unit for repeated landmarks, and reports post hoc extensions transparently.\n\nData and analysis code will be shared in disclosure-reviewed form at [PUBLIC_REPOSITORY_URL] and archived at [PERSISTENT_DOI] before publication. Restricted source databases and row-level derived data will not be redistributed.\n\nThe authors report that no financial support was received for this work and declare no conflicts of interest. [AUTHOR_CONFIRMATION_NEEDED: confirm that the manuscript is original, is not under consideration elsewhere, and has no related simultaneous submission or preprint requiring disclosure.]\n\nThank you for considering this manuscript.\n\nSincerely,\n\nPengqin Shu, Xiaoye Xu, Fei Ying, Jing Sun, Zhao Liu, and Tielong Chen\nFor all authors\n\nCorresponding author:\nTielong Chen\nHangzhou Traditional Chinese Medicine Hospital Affiliated with Zhejiang Chinese Medical University\nNo. 453 Tiyuchang Road, Xihu District, Hangzhou City, Zhejiang Province, China\nEmail: ctlktz@163.com\n"""
+    text = f"""{date}\n\nThe Editor-in-Chief\n[Target Journal]\n\nDear Editor-in-Chief,\n\nWe submit our manuscript entitled \"{TITLE}\" for consideration as an original research article in [Target Journal].\n\nThis retrospective landmark study evaluates whether an hourly model for first documented continuous vasopressor initiation transports across temporal drift, a large US multicenter network, and an Austrian ICU database. The model was developed and selected using temporally separated MIMIC-IV cohorts, frozen before testing, and evaluated with discrimination, calibration, held-out local recalibration, hospital-level heterogeneity, alternative landmark estimands, clinical comparators, and an actionability-gap sensitivity analysis. The central finding is that patient ranking transported better than absolute risk: HGB AUROC was 0.763 in the MIMIC-IV 2020-2022 temporal test, 0.839 in eICU-CRD, and 0.696 in SICdb, while calibration slopes and threshold-related alert burden varied substantially by setting. These results provide a practical evaluation framework for deciding when local calibration and threshold assessment are necessary before prospective silent testing.\n\nThe manuscript is deliberately framed as a transportability and calibration study. It does not claim a novel vasopressor endpoint, clinical effectiveness, deployment readiness, or universal alert threshold. The analysis follows TRIPOD+AI-oriented reporting principles, treats the ICU or unit stay as the inference unit for repeated landmarks, and reports post hoc extensions transparently.\n\nThe study was supported by the grants listed in the manuscript. MIMIC-IV, eICU-CRD, and SICdb are restricted-access de-identified databases; raw records and row-level derived data will not be redistributed. The analysis code and aggregate outputs are available at https://github.com/shupengqin/mimic-eicu-sicdb-vasopressor-transportability, with the manuscript version preserved at commit 069c68b52bd2d2bc5b275f0b2556db89ee41082d.\n\nThe authors declare no competing interests. [AUTHOR_CONFIRMATION_NEEDED: confirm that the manuscript is original, is not under consideration elsewhere, and has no related simultaneous submission or preprint requiring disclosure.]\n\nThank you for considering this manuscript.\n\nSincerely,\n\nXiaoye Xu, Tielong Chen, Fei Ying, Zhao Liu, Jing Sun, Cheng Bao, Chao Chen, and Pengqin Shu\nFor all authors\n\nCorresponding author:\nPengqin Shu\nHangzhou Traditional Chinese Medicine Hospital Affiliated with Zhejiang Chinese Medical University\nNo. 453 Tiyuchang Road, Xihu District, Hangzhou City, Zhejiang Province, China\nEmail: shupengqin@163.com\n"""
     (PKG / "Cover_Letter_generic.md").write_text(text, encoding="utf-8")
     doc = Document()
     configure(doc, double=False)
@@ -490,7 +500,7 @@ def write_main_manuscript() -> None:
     add_para(doc, ARTICLE_TYPE, spacing=MANUSCRIPT_LINE_SPACING)
     add_para(
         doc,
-        f"Main-text word count: {main_text_count:,}; Abstract word count: {abstract_count:,}; Figures: 5; Tables: 5; Supplementary tables: 8.",
+        f"Main-text word count: {main_text_count:,}; Abstract word count: {abstract_count:,}; Figures: 4; Tables: 5; Supplementary tables: 8.",
         spacing=MANUSCRIPT_LINE_SPACING,
     )
     current_heading = ""
@@ -552,16 +562,16 @@ def write_main_manuscript() -> None:
     configure_manuscript_page_furniture(doc)
     doc.save(PKG / "Main_Manuscript.docx")
     source = manuscript_source()
-    source_body = re.sub(r"^# .*?\n+", "", source, count=1, flags=re.DOTALL)
-    author_line = "Pengqin Shu1#, Xiaoye Xu2#, Fei Ying1#, Jing Sun1#, Zhao Liu1, Tielong Chen1*"
+    source_body = source.strip()
+    author_line = "Xiaoye Xu1#, Tielong Chen2#, Fei Ying2#, Zhao Liu2#, Jing Sun2, Cheng Bao2, Chao Chen2, Pengqin Shu2*"
     metadata = (
         f"# {TITLE}\n\n{author_line}\n\n"
         "# These authors contributed equally to this work and share first authorship.\n\n"
-        "1 Hangzhou TCM Hospital Affiliated with Zhejiang Chinese Medical University, Hangzhou, Zhejiang, China.\n\n"
-        "2 Affiliated Mental Health Center & Hangzhou Seventh People's Hospital, Zhejiang University School of Medicine, Zhejiang, China.\n\n"
-        "*Corresponding author: Tielong Chen, Hangzhou Traditional Chinese Medicine Hospital Affiliated with Zhejiang Chinese Medical University, No. 453 Tiyuchang Road, Xihu District, Hangzhou City, Zhejiang Province, China. Email: ctlktz@163.com.\n\n"
+        "1 Affiliated Mental Health Center & Hangzhou Seventh People's Hospital, Zhejiang University School of Medicine, Hangzhou, Zhejiang, China.\n\n"
+        "2 Hangzhou TCM Hospital Affiliated with Zhejiang Chinese Medical University, Hangzhou, Zhejiang, China.\n\n"
+        "*Corresponding author: Pengqin Shu, Hangzhou Traditional Chinese Medicine Hospital Affiliated with Zhejiang Chinese Medical University, No. 453 Tiyuchang Road, Xihu District, Hangzhou City, Zhejiang Province, China. Email: shupengqin@163.com.\n\n"
         f"## Short title\n\n{SHORT_TITLE}\n\n## Article type\n\n{ARTICLE_TYPE}\n\n"
-        f"Main-text word count: {main_text_count:,}; Abstract word count: {abstract_count:,}; Figures: 5; Tables: 5; Supplementary tables: 8.\n\n"
+        f"Main-text word count: {main_text_count:,}; Abstract word count: {abstract_count:,}; Figures: 4; Tables: 5; Supplementary tables: 8.\n\n"
     )
     table_notes = "\n\n".join([title + ". " + note for title, _, _, note in MAIN_TABLE_SPECS])
     main_md = (
@@ -580,34 +590,37 @@ def write_main_manuscript() -> None:
     (PKG / "Main_Manuscript.md").write_text(main_md, encoding="utf-8")
     shutil.copy2(OUT / "corrected_figure_legends.md", PKG / "corrected_figure_legends.md")
     shutil.copy2(OUT / "figure_source_manifest.csv", PKG / "figure_source_manifest.csv")
+    claim_audit = ROOT.parent / "reference_claim_audit_updated.md"
+    if claim_audit.exists():
+        shutil.copy2(claim_audit, PKG / "reference_claim_audit.md")
 
 
 def write_readme() -> None:
     text = """# Submission package
 
-This package is a generic journal-format submission set for the study on temporal and geographic transportability of an hourly vasopressor-initiation model. No target journal was specified, so journal-specific word limits, reference style, reporting checklists, file naming, and declarations must be adapted before upload.
+This package is a generic journal-format submission set for the study on temporal and geographic transportability of an hourly vasopressor-initiation model. A target journal has not yet been selected, so journal-specific word limits, reference style, reporting checklists, file naming, and declaration wording must be checked before upload.
 
 ## Core files
 
 - `Main_Manuscript.docx` and `Main_Manuscript.md`: main text, abstract, declarations, source-verified reference list, and figure legends.
-- `Title_Page.docx`: authors, affiliations, correspondence, keywords, proposed CRediT statement, and author confirmation fields.
-- `Cover_Letter_generic.docx` and `Cover_Letter_generic.md`: generic cover letter with target-journal and repository placeholders.
-- `figures/`: five main figures (Figures 1-5) and two supplementary figures (Supplementary Figures S1-S2) in PDF, SVG, TIFF, and PNG formats.
+- `Title_Page.docx`: authors, affiliations, correspondence, keywords, declarations, and the current CRediT statement. Patient/public involvement, acknowledgements, and AI-use wording remain marked for author confirmation where required.
+- `Cover_Letter_generic.docx` and `Cover_Letter_generic.md`: generic cover letter with a target-journal placeholder; the public repository URL and manuscript-specific commit are already included.
+- `figures/`: four main figures (Figures 1-4) and two supplementary figures (Supplementary Figures S1-S2) in PDF, SVG, TIFF, and PNG formats.
 - `tables/`: Tables 1-5 in DOCX, CSV, and Markdown formats. Table cells use white backgrounds with black text and borders only.
 - `supplementary/`: Supplementary Tables 1-8 in one DOCX plus editable CSV and Markdown files. Tables 5-7 also have independent 5A/5B, 6A/6B/6C, and 7A/7B files so each data block is directly editable.
 - `corrected_figure_legends.md` and `figure_source_manifest.csv`: final legend text and source-data mapping for the figure files.
 - `reference_claim_audit.md`: claim-to-citation audit showing whether each in-text reference supports the associated statement.
 
-## Mandatory author confirmations before submission
+## Remaining author and journal checks before submission
 
 1. Replace `[Target Journal]` and adapt the cover letter to the journal's scope.
-2. Supply the ethics committee or institutional review board determination, waiver language, and identifier if applicable.
-3. Confirm patient/public involvement wording.
-4. Confirm that no financial support was received and that no conflicts of interest exist for every author.
-5. Confirm the proposed CRediT roles with all authors.
-6. Replace `[PUBLIC_REPOSITORY_URL]`, `[PERSISTENT_DOI]`, and `[OPEN_SOURCE_LICENSE]` after disclosure review and repository creation.
+2. Confirm that the concise ethics wording fits the target journal: this secondary analysis used de-identified database records, was exempt from institutional ethics review, involved no direct patient contact or identifiable information, and required no additional informed consent.
+3. Confirm patient/public involvement wording and whether the journal requires a separate statement.
+4. Confirm the funding list in the manuscript and that all authors agree with the competing-interests statement.
+5. Confirm the CRediT roles with all authors.
+6. Confirm whether the public repository needs a DOI, an explicit open-source licence, or a journal-specific data/code statement. The repository URL and manuscript-specific commit are already fixed in the manuscript.
 7. Confirm originality, exclusive submission, preprint status, related manuscripts, and AI-use disclosure.
-8. Read `reference_claim_audit.md`, import the source-verified references into the journal's required format, and recheck every in-text citation.
+8. Read `reference_claim_audit.md` and `reference_verification_checklist.md`, then convert the source-verified references to the target journal's style and recheck every in-text citation.
 9. Confirm whether the target journal uses `Supplementary Figure`, `Extended Data Figure`, or another nomenclature; the current generic package uses `Supplementary Figure S1-S2`.
 
 ## Reference handling
@@ -615,6 +628,8 @@ This package is a generic journal-format submission set for the study on tempora
 The manuscript contains 30 numbered references, with 20 (66.7%) published in 2021-2026. The manuscript list is formatted as numbered Vancouver-style entries; DOI, PMID, and official dataset links are documented separately in `reference_verification_checklist.md`. A citation-coverage audit confirms that references [1]-[30] are each cited at least once, and `reference_claim_audit.md` records the claim-level support review.
 
 The SICdb cohort is described as a single Austrian hospital cohort, not European multicenter validation. Decision-curve and alert-suppression results are exploratory policy analyses and do not establish clinical benefit.
+
+The manuscript currently contains 30 numbered references in first-citation order. Each reference is cited at least once, no reference is cited more than twice, and the claim-level and bibliographic verification reports are included for manual review.
 """
     (PKG / "README.md").write_text(text, encoding="utf-8")
 

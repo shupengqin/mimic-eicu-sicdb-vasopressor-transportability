@@ -1,0 +1,4 @@
+dataset,n_landmarks,landmark_prevalence,model_brier,null_brier_evaluation_prevalence,brier_skill_evaluation_prevalence,interpretation
+mimic_temporal_test,152895,0.008169004872625004,0.009555747520057998,0.008102272232016032,-0.17939107035907487,descriptive full-cohort reference; the repeated held-out reference is primary for this post hoc check
+eicu_external,2417020,0.011074380849144815,0.011098220421721131,0.010951738937952912,-0.013375180379856522,descriptive full-cohort reference; the repeated held-out reference is primary for this post hoc check
+sicdb_external,50054,0.04894713709194071,0.04521228222735272,0.04655131486244345,0.02876465764817815,descriptive full-cohort reference; the repeated held-out reference is primary for this post hoc check

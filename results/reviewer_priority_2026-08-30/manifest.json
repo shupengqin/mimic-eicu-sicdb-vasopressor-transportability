@@ -1,0 +1,77 @@
+{
+  "generated_at_utc": "2026-08-30T14:30:57.411924+00:00",
+  "analysis_status": "post_hoc_reviewer_priority_aggregate_release",
+  "contains_patient_level_data": false,
+  "files": [
+    {
+      "name": "README.md",
+      "bytes": 571,
+      "sha256": "0364d528a6da03d75a660b157daae03929bef3067cdf9053518a1dacbf223bdf"
+    },
+    {
+      "name": "reviewer_brier_skill_full_cohort.csv",
+      "bytes": 763,
+      "sha256": "ec90018389ab314e69177a2fcf53a959c77907580e3498cc1e2ef94527aba219"
+    },
+    {
+      "name": "reviewer_brier_skill_repeated_splits.csv",
+      "bytes": 58934,
+      "sha256": "dd733f77cb403236ee5bd2d2d5f63a3ad16c0342538d3d8bebe1382bf6000acc"
+    },
+    {
+      "name": "reviewer_brier_skill_summary.csv",
+      "bytes": 1544,
+      "sha256": "c30c866e8b25faae7a27d3a29eabb9bbdf1569924934e48a987a184274e0cdf2"
+    },
+    {
+      "name": "reviewer_eicu_hospital_calibration_cluster_robust.csv",
+      "bytes": 20010,
+      "sha256": "64a57d9b41d09d800e6d26988aef31f45d839758a37cc608758dab632fe03d7b"
+    },
+    {
+      "name": "reviewer_eicu_hospital_random_effects_summary.csv",
+      "bytes": 602,
+      "sha256": "62238c363bc5b5eb4cd95ed7ffdffb3b0bdd0c4d4ec35d21f3ab42c29f1e5e6e"
+    },
+    {
+      "name": "reviewer_first_agent_composition.csv",
+      "bytes": 3694,
+      "sha256": "feba7afc634eeed94cf691eef1c3c514240fcda77320bbd1629eaadcd3c712e6"
+    },
+    {
+      "name": "reviewer_fixed_policy_repeated_splits.csv",
+      "bytes": 219404,
+      "sha256": "51e78bdaa48b5c247d153395e10b7974e75817482235374191cbff88a8b65619"
+    },
+    {
+      "name": "reviewer_fixed_policy_summary.csv",
+      "bytes": 6374,
+      "sha256": "2527290453bd09cd1734c3398f8400bf12e5c861212106dae3ff361164680335"
+    },
+    {
+      "name": "reviewer_hour6_competing_exit_metrics.csv",
+      "bytes": 2451,
+      "sha256": "eff3d3cfbd780e31e5ba07ac5174205992a4ea06c2da7dba3a0b6ef5a1d1b56a"
+    },
+    {
+      "name": "reviewer_input_manifest.json",
+      "bytes": 1260,
+      "sha256": "47d8bac3c6ad11c743336d54f99750b605461c1b7911ce431cb0486fe77f2a41"
+    },
+    {
+      "name": "reviewer_predictor_qc_42_features.csv",
+      "bytes": 74985,
+      "sha256": "20c848972e05d00bfd86b4a0fe190e950b8ad3e6f38042e68d6e74ca058a00f1"
+    },
+    {
+      "name": "reviewer_priority_extensions_summary.md",
+      "bytes": 5207,
+      "sha256": "06bafa66981c6c3a7c170b9392f1faa90f9c3115da8786420d8b489ed9916198"
+    },
+    {
+      "name": "reviewer_sensitivity_model_metrics.csv",
+      "bytes": 5787,
+      "sha256": "7e5b882b9fea880ccea64a50d6792f63c82d12f50d5ae21fe192c32440bcfc6a"
+    }
+  ]
+}

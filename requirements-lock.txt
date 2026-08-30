@@ -1,3 +1,4 @@
+# Locked analysis environment used for the manuscript outputs.
 numpy==2.5.0
 pandas==3.0.4
 scipy==1.18.0

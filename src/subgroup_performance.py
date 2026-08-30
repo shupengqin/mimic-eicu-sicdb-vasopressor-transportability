@@ -44,7 +44,7 @@ def read_demographics(dataset: str) -> pd.DataFrame:
         frame = pd.concat(parts, ignore_index=True)
     elif dataset == "sicdb_external":
         frame = pd.read_csv(
-            rv.WORK / "sicdb_samples_main_units_rr.csv",
+            rv.WORK / "sicdb_samples_main_units.csv",
             usecols=DEMOGRAPHIC_COLUMNS,
             low_memory=False,
         )

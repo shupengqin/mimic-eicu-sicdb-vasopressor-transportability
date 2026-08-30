@@ -10,6 +10,12 @@ data/
 *.pkl
 *.parquet
 
+# Disclosure-reviewed aggregate results selected for the public release
+!results/
+!results/**/*.csv
+!results/**/*.md
+!results/**/*.json
+
 # Logs and local configuration
 *.log
 .env

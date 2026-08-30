@@ -30,7 +30,7 @@ def build_model() -> HistGradientBoostingClassifier:
 
 
 def main() -> None:
-    mimic = rv.read_csv_samples(rv.WORK / "mimic_samples.csv")
+    mimic = rv.read_csv_samples(rv.WORK / "mimic_samples_anchor.csv")
     train = mimic[mimic["time_year"].le(2177)].copy()
     temporal = mimic[mimic["time_year"].ge(2178)].copy()
     if train.empty or temporal.empty:
@@ -80,7 +80,7 @@ def main() -> None:
                 flush=True,
             )
 
-        eicu_metrics, eicu_curve, _ = rv.evaluate_csv("eicu_external", rv.WORK / "eicu_samples.csv", candidate)
+        eicu_metrics, eicu_curve, _ = rv.evaluate_csv("eicu_external", rv.EICU_SAMPLES, candidate)
         eicu_metrics["model"] = model_name
         rows.append(eicu_metrics)
         for curve_row in eicu_curve:
@@ -108,7 +108,7 @@ def main() -> None:
         "",
         "## Performance",
         "",
-        "| Dataset | Model | AUROC | AUPRC | Brier | Calibration intercept | Calibration slope | False alerts/100 patient-hours at 0.10 |",
+        "| Dataset | Model | AUROC | AUPRC | Brier | Calibration intercept | Calibration slope | False alerts/100 eligible landmark-hours at 0.10 |",
         "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for dataset in ["mimic_temporal", "eicu_external", "sicdb_external"]:
@@ -117,7 +117,7 @@ def main() -> None:
             comparison_lines.append(
                 f"| {dataset} | {model_name} | {row.auroc:.3f} | {row.auprc:.3f} | {row.brier:.3f} | "
                 f"{row.calibration_intercept:.3f} | {row.calibration_slope:.3f} | "
-                f"{row['false_alerts_per_100_patient_hours_at_0.10']:.2f} |"
+                f"{row['false_alerts_per_100_eligible_landmark_hours_at_0.10']:.2f} |"
             )
     comparison_lines.extend(
         [

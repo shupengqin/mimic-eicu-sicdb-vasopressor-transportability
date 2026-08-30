@@ -22,12 +22,16 @@ def strict_frame(frame: pd.DataFrame) -> pd.DataFrame:
 def run_strict_future(model: object) -> None:
     rows = []
     for path, name, split in [
-        (rv.WORK / "mimic_samples.csv", "mimic", "mimic"),
+        (rv.WORK / "mimic_samples_anchor.csv", "mimic", "mimic"),
         (rv.WORK / "sicdb_samples_main_units.csv", "sicdb", "sicdb"),
     ]:
         frame = rv.read_csv_samples(path)
         if name == "mimic":
-            subsets = [("mimic_development", frame[frame.time_year.le(2177)]), ("mimic_temporal", frame[frame.time_year.ge(2178)])]
+            groups = frame["time_group"].astype(str).str.strip()
+            subsets = [
+                ("mimic_development", frame[groups.isin(rv.MIMIC_DEVELOPMENT_GROUPS)]),
+                ("mimic_temporal", frame[groups.isin(rv.MIMIC_TEMPORAL_TEST_GROUPS)]),
+            ]
         else:
             subsets = [("sicdb_external", frame)]
         for dataset, subset in subsets:
@@ -39,7 +43,7 @@ def run_strict_future(model: object) -> None:
     p_parts = []
     rec_parts = []
     lead_parts = []
-    for chunk in rv.iter_csv_chunks(rv.WORK / "eicu_samples.csv"):
+    for chunk in rv.iter_csv_chunks(rv.EICU_SAMPLES):
         clean = strict_frame(chunk)
         p = model.predict_proba(rv.feature_frame(clean))[:, 1]
         y_parts.append(clean["label"].astype(int).to_numpy())
@@ -57,6 +61,23 @@ def run_strict_future(model: object) -> None:
 
 def write_coefficients(model_artifact: dict) -> None:
     model = model_artifact["model"]
+    source_model = str(model_artifact.get("algorithm", "unknown"))
+    # The primary model is HGB and has no interpretable coefficient vector.
+    # Export the separately fitted logistic benchmark instead, so this audit
+    # artifact remains useful without pretending that HGB coefficients exist.
+    if not hasattr(model, "named_steps"):
+        logistic_path = rv.OUTPUTS / "corrected_logistic_regression_model.joblib"
+        if logistic_path.exists():
+            logistic_artifact = joblib.load(logistic_path)
+            model = logistic_artifact["model"]
+            source_model = "logistic_regression_benchmark"
+        else:
+            (rv.OUTPUTS / "model_coefficients.csv").write_text(
+                "feature,coefficient,odds_ratio_per_scaled_unit,absolute_coefficient,source_model\n"
+                f"No linear coefficients available,,,,{source_model}\n",
+                encoding="utf-8",
+            )
+            return
     imputer = model.named_steps["imputer"]
     classifier = model.named_steps["classifier"]
     names = imputer.get_feature_names_out(model_artifact["feature_cols"])
@@ -67,6 +88,7 @@ def write_coefficients(model_artifact: dict) -> None:
             "coefficient": coef,
             "odds_ratio_per_scaled_unit": np.exp(coef),
             "absolute_coefficient": np.abs(coef),
+            "source_model": source_model,
         }
     ).sort_values("absolute_coefficient", ascending=False)
     out.to_csv(rv.OUTPUTS / "model_coefficients.csv", index=False)
@@ -79,22 +101,33 @@ def write_cohort_flow(metrics: pd.DataFrame) -> None:
         {"dataset": "sicdb_main_units", "source_adult_cases": 27223, "adult_main_unit_cases": 10283, "adult_main_unit_los_ge_12h": 9696, "risk_set_records": 3769},
     ]
     flow = pd.DataFrame(rows)
-    metric_map = metrics.set_index("dataset")
-    metric_sets = {
-        "mimiciv": ["mimic_development", "mimic_temporal"],
+    # Use the corrected cohort summary, which is generated from the exact
+    # extracts used by the manuscript.  The old implementation summed the
+    # legacy validation file and could silently reintroduce pre-correction
+    # eICU counts.
+    summary = pd.read_csv(rv.OUTPUTS / "corrected_table1_cohort_summary.csv").set_index("dataset")
+    mapping = {
+        "mimiciv": ["mimic_development_2008_2016", "mimic_model_selection_2017_2019", "mimic_temporal_test_2020_2022"],
         "eicu": ["eicu_external"],
         "sicdb_main_units": ["sicdb_external"],
     }
-    for source_name, metric_names in metric_sets.items():
-        selected = metric_map.loc[metric_names]
-        flow.loc[flow.dataset.eq(source_name), "landmark_samples"] = int(selected["n_samples"].sum())
-        flow.loc[flow.dataset.eq(source_name), "positive_records"] = int(selected["n_positive_records"].sum())
-        flow.loc[flow.dataset.eq(source_name), "positive_landmarks"] = int(selected["n_positive_samples"].sum())
+    for source_name, names in mapping.items():
+        selected = summary.loc[names]
+        flow.loc[flow.dataset.eq(source_name), "landmark_samples"] = int(selected["n_landmarks"].sum())
+        flow.loc[flow.dataset.eq(source_name), "positive_records"] = int(selected["event_positive_stays"].sum())
+        flow.loc[flow.dataset.eq(source_name), "positive_landmarks"] = int(selected["positive_landmarks"].sum())
     flow.to_csv(rv.OUTPUTS / "cohort_flow.csv", index=False)
 
 
 def write_manuscript_blueprint(metrics: pd.DataFrame) -> None:
-    lookup = metrics.set_index("dataset")
+    # The validation table contains both candidate models. The blueprint
+    # summarizes the frozen HGB, so select that row before indexing by dataset.
+    if "model" in metrics.columns:
+        hgb_metrics = metrics.loc[metrics["model"].eq("hist_gradient_boosting")].copy()
+    else:
+        hgb_metrics = metrics.copy()
+    lookup = hgb_metrics.set_index("dataset")
+    temporal_key = "mimic_temporal_test" if "mimic_temporal_test" in lookup.index else "mimic_temporal"
     lines = [
         "# Manuscript blueprint",
         "",
@@ -116,7 +149,7 @@ def write_manuscript_blueprint(metrics: pd.DataFrame) -> None:
         "",
         "## Core results",
         "",
-        f"MIMIC-IV temporal AUROC was {lookup.loc['mimic_temporal','auroc']:.3f} with calibration slope {lookup.loc['mimic_temporal','calibration_slope']:.3f}. eICU AUROC was {lookup.loc['eicu_external','auroc']:.3f}, while its calibration intercept was {lookup.loc['eicu_external','calibration_intercept']:.3f}. SICdb AUROC was {lookup.loc['sicdb_external','auroc']:.3f}, with calibration intercept {lookup.loc['sicdb_external','calibration_intercept']:.3f}.",
+        f"MIMIC-IV temporal AUROC was {lookup.loc[temporal_key,'auroc']:.3f} with calibration slope {lookup.loc[temporal_key,'calibration_slope']:.3f}. eICU AUROC was {lookup.loc['eicu_external','auroc']:.3f}, while its calibration intercept was {lookup.loc['eicu_external','calibration_intercept']:.3f}. SICdb AUROC was {lookup.loc['sicdb_external','auroc']:.3f}, with calibration intercept {lookup.loc['sicdb_external','calibration_intercept']:.3f}.",
         "",
         "## Novelty claim",
         "",
@@ -134,8 +167,8 @@ def write_manuscript_blueprint(metrics: pd.DataFrame) -> None:
 
 
 def main() -> None:
-    artifact = joblib.load(rv.OUTPUTS / "mimic_frozen_model.joblib")
-    metrics = pd.read_csv(rv.OUTPUTS / "model_metrics.csv")
+    artifact = joblib.load(rv.OUTPUTS / "corrected_primary_model.joblib")
+    metrics = pd.read_csv(rv.OUTPUTS / "corrected_frozen_validation_metrics.csv")
     run_strict_future(artifact["model"])
     write_coefficients(artifact)
     write_cohort_flow(metrics)

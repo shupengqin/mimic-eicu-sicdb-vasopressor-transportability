@@ -583,6 +583,9 @@ def decision_curve(y: np.ndarray, p: np.ndarray, dataset: str) -> List[dict]:
         rows.append(
             {
                 "dataset": dataset,
+                "analysis_unit": "eligible_landmark",
+                "landmarks_repeated_within_stay": True,
+                "n_eligible_landmark_hours": n,
                 "threshold": threshold,
                 "net_benefit_model": model_nb,
                 "net_benefit_treat_all": all_nb,
@@ -611,6 +614,9 @@ def summarize_predictions(
     fixed_offset, calibration_intercept, calibration_slope = calibration_fit(y, p)
     metrics = {
         "dataset": dataset,
+        "analysis_unit": "eligible_landmark",
+        "landmarks_repeated_within_stay": True,
+        "n_eligible_landmark_hours": int(len(y)),
         "n_samples": int(len(y)),
         "n_records": int(pd.Series(record_ids).nunique()),
         "n_positive_records": int(record_labels.sum()),
@@ -636,7 +642,7 @@ def summarize_predictions(
         metrics[f"sensitivity_at_{threshold:.2f}"] = tp / (tp + fn) if tp + fn else np.nan
         metrics[f"specificity_at_{threshold:.2f}"] = tn / (tn + fp) if tn + fp else np.nan
         metrics[f"ppv_at_{threshold:.2f}"] = tp / (tp + fp) if tp + fp else np.nan
-        metrics[f"false_alerts_per_100_patient_hours_at_{threshold:.2f}"] = fp / len(y) * 100.0
+        metrics[f"false_alerts_per_100_eligible_landmark_hours_at_{threshold:.2f}"] = fp / len(y) * 100.0
     quality = {
         "dataset": dataset,
         "n_rows": int(n_feature_rows),

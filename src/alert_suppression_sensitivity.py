@@ -70,6 +70,8 @@ def summarize(
         "threshold": threshold,
         "suppression_hours": SUPPRESSION_HOURS,
         "n_landmarks": len(y),
+        "n_eligible_landmark_hours": len(y),
+        "exposure_unit": "eligible_landmark_hours",
         "n_stays": len(unique_records),
         "n_event_stays": event_stays,
         "alert_episodes": true_alerts + false_alerts,
@@ -79,12 +81,14 @@ def summarize(
         "episode_ppv": true_alerts / (true_alerts + false_alerts)
         if true_alerts + false_alerts
         else np.nan,
-        "alert_episodes_per_100_patient_days": (true_alerts + false_alerts)
+        # Each eligible landmark is one hourly prediction opportunity. This
+        # denominator is not patient time and must not be reported as such.
+        "alert_episodes_per_100_eligible_landmark_hours": (true_alerts + false_alerts)
         / len(y)
-        * 2400,
-        "false_alert_episodes_per_100_patient_days": false_alerts
+        * 100,
+        "false_alert_episodes_per_100_eligible_landmark_hours": false_alerts
         / len(y)
-        * 2400,
+        * 100,
     }
 
 
@@ -136,16 +140,16 @@ def main() -> None:
     lines = [
         "# Six-hour alert-suppression sensitivity",
         "",
-        "This descriptive post hoc analysis converted consecutive threshold crossings into alert episodes. After an emitted alert, further alerts in the same stay were suppressed for six hours. Results use the initial identifier-disjoint 80% recalibration evaluation subset and do not establish clinical utility.",
+        "This descriptive post hoc analysis converted consecutive threshold crossings into alert episodes. After an emitted alert, further alerts in the same stay were suppressed for six hours. Rates use the number of eligible landmark rows as the denominator and are therefore landmark-row rates, not patient-time exposure rates. Each row is a repeated hourly prediction opportunity within a stay. Results use the initial identifier-disjoint 80% recalibration evaluation subset and do not establish clinical utility.",
         "",
-        "| Dataset | Calibration | Event-stay sensitivity | Episode PPV | False episodes per 100 patient-days |",
+        "| Dataset | Calibration | Event-stay sensitivity | Episode PPV | False episodes per 100 eligible landmark-hours |",
         "| --- | --- | ---: | ---: | ---: |",
     ]
     for row in selected.itertuples(index=False):
         lines.append(
             f"| {labels[row.dataset]} | {row.calibration} | "
             f"{row.event_stay_sensitivity:.3f} | {row.episode_ppv:.3f} | "
-            f"{row.false_alert_episodes_per_100_patient_days:.2f} |"
+            f"{row.false_alert_episodes_per_100_eligible_landmark_hours:.2f} |"
         )
     lines.extend(
         [

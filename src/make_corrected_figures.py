@@ -66,6 +66,9 @@ def save_figure(fig: plt.Figure, name: str) -> None:
 
 def study_design(ax: plt.Axes) -> None:
     ax.set_axis_off()
+    cohort_path = OUTPUTS / "corrected_table1_cohort_summary.csv"
+    cohort = pd.read_csv(cohort_path).set_index("dataset") if cohort_path.exists() else None
+    eicu_stays = int(cohort.loc["eicu_external", "n_stays"]) if cohort is not None else 157765
     panel_label(ax, "a", x=-0.03, y=1.00)
     x_positions = [0.02, 0.29]
     widths = [0.23, 0.21]
@@ -85,7 +88,7 @@ def study_design(ax: plt.Axes) -> None:
     ax.text(0.64, 0.59, "Refit on\n2008-2019", fontsize=6.8, ha="center", va="center", color="#555555")
     for y, title, detail, color in [
         (0.75, "MIMIC-IV 2020-2022", "9,258 stays", COLORS["test"]),
-        (0.49, "eICU-CRD", "157,765 stays", "white"),
+        (0.49, "eICU-CRD", f"{eicu_stays:,} stays", "white"),
         (0.23, "SICdb", "3,769 stays", "white"),
     ]:
         ax.add_patch(Rectangle((0.79, y - 0.10), 0.19, 0.20, facecolor=color, edgecolor=COLORS["hgb"], linewidth=1.0))

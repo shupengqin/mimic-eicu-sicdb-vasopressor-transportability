@@ -60,9 +60,10 @@ def save_figure(name: str, fig: plt.Figure) -> None:
     plt.close(fig)
 
 
-def copy_figure(source_stem: str, target_stem: str) -> None:
+def copy_figure(source_stem: str, target_stem: str, source_dir: Path | None = None) -> None:
+    source_dir = FIG if source_dir is None else source_dir
     for suffix in (".svg", ".pdf", ".tiff", ".png"):
-        source = FIG / f"{source_stem}{suffix}"
+        source = source_dir / f"{source_stem}{suffix}"
         if source.exists():
             shutil.copy2(source, FIG / f"{target_stem}{suffix}")
 
@@ -70,6 +71,15 @@ def copy_figure(source_stem: str, target_stem: str) -> None:
 def cohort_flow(ax: plt.Axes) -> None:
     """Render the database-specific inclusion and exclusion flow."""
     ax.set_axis_off()
+    summary_path = OUT / "corrected_table1_cohort_summary.csv"
+    summary = pd.read_csv(summary_path).set_index("dataset") if summary_path.exists() else None
+    def n(key: str, field: str, fallback: int) -> int:
+        if summary is None or key not in summary.index:
+            return fallback
+        return int(summary.loc[key, field])
+    eicu_stays = n("eicu_external", "n_stays", 157765)
+    eicu_landmarks = n("eicu_external", "n_landmarks", 2417020)
+    eicu_positive = n("eicu_external", "positive_landmarks", 26767)
     columns = [
         {
             "title": "MIMIC-IV 2020-2022",
@@ -88,8 +98,8 @@ def cohort_flow(ax: plt.Axes) -> None:
             "boxes": [
                 ("Source adult unit stays", "n = 200,234"),
                 ("Adult stays with LOS >= 12 h", "n = 172,392"),
-                ("Eligible risk-set stays", "n = 157,765"),
-                ("Hourly landmark rows", "n = 2,417,020\nPositive: 26,767"),
+                ("Eligible risk-set stays", f"n = {eicu_stays:,}"),
+                ("Hourly landmark rows", f"n = {eicu_landmarks:,}\nPositive: {eicu_positive:,}"),
             ],
             "exclusions": ["Excluded: 27,842", "Excluded: 14,627"],
         },
@@ -160,6 +170,12 @@ def figure_1() -> None:
 
 def study_design(ax: plt.Axes) -> None:
     ax.set_axis_off()
+    cohort_path = OUT / "corrected_table1_cohort_summary.csv"
+    if cohort_path.exists():
+        cohort = pd.read_csv(cohort_path).set_index("dataset")
+        eicu_stays = int(cohort.loc["eicu_external", "n_stays"])
+    else:
+        eicu_stays = 157765
     boxes = [
         (0.01, 0.35, 0.22, 0.42, PALE_BLUE, "Development", "MIMIC-IV 2008-2016", "50,200 stays"),
         (0.28, 0.35, 0.22, 0.42, PALE_TEAL, "Model selection", "MIMIC-IV 2017-2019", "11,997 stays"),
@@ -175,7 +191,7 @@ def study_design(ax: plt.Axes) -> None:
         ax.add_patch(FancyArrowPatch((start, 0.56), (end, 0.56), arrowstyle="-|>", mutation_scale=10, linewidth=0.9, color=GREY))
     outputs = [
         (0.80, 0.70, PALE_RED, "MIMIC-IV 2020-2022", "9,258 stays"),
-        (0.80, 0.50, "white", "eICU-CRD", "157,765 stays"),
+        (0.80, 0.50, "white", "eICU-CRD", f"{eicu_stays:,} stays"),
         (0.80, 0.30, "white", "SICdb", "3,769 stays"),
     ]
     for x, y, fill, title, detail in outputs:
@@ -320,11 +336,11 @@ def operating_points(ax: plt.Axes, suppression: pd.DataFrame, dataset: str, labe
     part = suppression[(suppression.dataset.eq(dataset)) & (suppression.threshold.eq(0.05)) & (suppression.suppression_hours.eq(6))]
     for calibration, color, marker, name in [("uncalibrated", GREY, "o", "Uncalibrated"), ("intercept_only", TEAL, "s", "Intercept recalibration")]:
         row = part[part.calibration.eq(calibration)].iloc[0]
-        ax.scatter(row.event_stay_sensitivity, row.false_alert_episodes_per_100_patient_days, s=34, color=color, marker=marker, label=name, zorder=3)
+        ax.scatter(row.event_stay_sensitivity, row.false_alert_episodes_per_100_eligible_landmark_hours, s=34, color=color, marker=marker, label=name, zorder=3)
     ax.set_title(label, fontsize=8, pad=4)
     ax.set_xlabel("Event-stay sensitivity")
-    ax.set_ylabel("False episodes / 100 patient-days")
-    ymax = float(part.false_alert_episodes_per_100_patient_days.max())
+    ax.set_ylabel("False episodes / 100 eligible landmark-hours")
+    ymax = float(part.false_alert_episodes_per_100_eligible_landmark_hours.max())
     ax.set_ylim(0, max(1.0, ymax * 1.16))
     ax.grid(color=LIGHT, linewidth=0.4)
     ax.set_axisbelow(True)
@@ -355,28 +371,23 @@ def main() -> None:
     figure_3()
     figure_4()
     figure_5()
-    copy_figure("Figure_S1_robustness", "Supplementary_Figure_S1_robustness")
+    copy_figure(
+        "Figure_S1_robustness",
+        "Supplementary_Figure_S1_robustness",
+        OUT / "figures",
+    )
     copy_figure("Figure_S3_methodological_extensions", "Supplementary_Figure_S2_methodological_extensions")
-    for index, stem in enumerate(
-        [
-            "Figure_1_cohort_flow",
-            "Figure_2_study_design",
-            "Figure_3_discrimination",
-            "Figure_4_calibration",
-            "Figure_5_clinical_utility",
-        ],
-        start=1,
-    ):
-        copy_figure(stem, f"Figure_{index}")
+    # Final manuscript numbering uses four main figures. Figure 2 is replaced
+    # by redraw_figure2_combined.py after this base export.
+    copy_figure("Figure_1_cohort_flow", "Figure_1")
+    copy_figure("Figure_2_study_design", "Figure_2")
+    copy_figure("Figure_4_calibration", "Figure_3")
+    copy_figure("Figure_5_clinical_utility", "Figure_4")
     manifest = pd.DataFrame([
         ["Figure 1", "all", "cohort_flow.csv"],
-        ["Figure 2", "all", "corrected_model_selection_metrics.csv; corrected_model_selection_record.csv"],
-        ["Figure 3", "a-b", "corrected_clustered_confidence_intervals.csv"],
-        ["Figure 4", "a-c", "corrected_calibration_curve.csv; corrected_recalibration_metrics.csv"],
-        ["Figure 4", "d-e", "corrected_clustered_confidence_intervals.csv"],
-        ["Figure 4", "f", "corrected_recalibration_metrics.csv"],
-        ["Figure 5", "a-c", "corrected_recalibrated_decision_curve.csv"],
-        ["Figure 5", "d-f", "corrected_alert_suppression_metrics.csv"],
+        ["Figure 2", "a-c", "corrected_model_selection_metrics.csv; corrected_model_selection_record.csv; corrected_clustered_confidence_intervals.csv"],
+        ["Figure 3", "a-f", "corrected_calibration_curve.csv; corrected_recalibration_metrics.csv; corrected_clustered_confidence_intervals.csv"],
+        ["Figure 4", "a-f", "corrected_recalibrated_decision_curve.csv; corrected_alert_suppression_metrics.csv"],
         ["Supplementary Figure S1", "all", "corrected_eicu_hospital_metrics.csv; corrected_sicdb_unit_metrics.csv; corrected_sicdb_all_units_metrics.csv; corrected_strict_future_metrics.csv"],
         ["Supplementary Figure S2", "all", "corrected_one_hour_gap_metrics.csv; corrected_stay_balanced_metrics.csv; corrected_fixed_hour_metrics.csv; corrected_repeated_recalibration.csv; corrected_eicu_hospital_metrics.csv"],
     ], columns=["figure", "panels", "source"])

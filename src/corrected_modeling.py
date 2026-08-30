@@ -147,7 +147,7 @@ def main() -> None:
         rv.OUTPUTS / "corrected_primary_model.joblib",
     )
 
-    sicdb = rv.read_csv_samples(rv.WORK / "sicdb_samples_main_units_rr.csv")
+    sicdb = rv.read_csv_samples(rv.WORK / "sicdb_samples_main_units.csv")
     metric_rows: list[dict] = []
     curve_rows: list[dict] = []
     for dataset, frame in [("mimic_temporal_test", temporal_test), ("sicdb_external", sicdb)]:
