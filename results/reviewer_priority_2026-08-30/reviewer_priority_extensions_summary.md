@@ -39,18 +39,34 @@ The reference forecast was the event prevalence estimated in each identifier-dis
 | eICU-CRD | -0.013 (-0.014 to -0.012) | 0.024 (0.023 to 0.024) |
 | SICdb | 0.029 (0.028 to 0.031) | 0.032 (0.030 to 0.035) |
 
+## Full logistic recalibration
+
+A post hoc logistic recalibration fitted an intercept and slope to the frozen prediction logit in each calibration subset. The transformed probabilities were applied once to the held-out evaluation subset; the HGB model and feature set were not refit.
+
+| Dataset | Method | Fitted slope, median (IQR) | Brier skill, median (IQR) |
+| --- | --- | ---: | ---: |
+| MIMIC-IV 2020-2022 temporal test | No recalibration | 1.000 (1.000 to 1.000) | -0.180 (-0.185 to -0.174) |
+| MIMIC-IV 2020-2022 temporal test | Intercept-only | 1.000 (1.000 to 1.000) | 0.003 (-0.000 to 0.007) |
+| MIMIC-IV 2020-2022 temporal test | Intercept + slope | 0.703 (0.671 to 0.746) | 0.019 (0.018 to 0.020) |
+| eICU-CRD | No recalibration | 1.000 (1.000 to 1.000) | -0.013 (-0.014 to -0.012) |
+| eICU-CRD | Intercept-only | 1.000 (1.000 to 1.000) | 0.024 (0.023 to 0.024) |
+| eICU-CRD | Intercept + slope | 0.961 (0.946 to 0.972) | 0.026 (0.024 to 0.027) |
+| SICdb | No recalibration | 1.000 (1.000 to 1.000) | 0.029 (0.028 to 0.031) |
+| SICdb | Intercept-only | 1.000 (1.000 to 1.000) | 0.032 (0.030 to 0.035) |
+| SICdb | Intercept + slope | 0.759 (0.705 to 0.808) | 0.036 (0.034 to 0.036) |
+
 ## Fixed operating policies
 
-Thresholds were selected in each calibration subset to target either five alerts per 100 eligible landmark rows or 80% landmark sensitivity, then applied unchanged to the evaluation subset. Policy lead time is the interval from the first emitted true-positive alert to the first target-pressor timestamp among detected event stays.
+Thresholds were selected in each calibration subset to target either five alerts per 100 eligible landmark rows or 80% landmark sensitivity, then applied unchanged to the evaluation subset. Policy lead time is the interval from the first emitted true-positive alert to the first target-pressor timestamp among detected event stays. Stay-level alert exposure is summarized after six-hour suppression; it is not a patient-day rate.
 
-| Dataset | Strategy | Sensitivity | Alerts/100 rows | False episodes/100 rows | Event-stay sensitivity | Lead time, h |
-| --- | --- | ---: | ---: | ---: | ---: | ---: |
-| MIMIC-IV 2020-2022 temporal test | 5 alerts/100 rows | 0.249 | 5.03 | 1.73 | 0.416 | 1.48 |
-| MIMIC-IV 2020-2022 temporal test | 80% calibration sensitivity | 0.805 | 44.14 | 10.13 | 0.882 | 2.00 |
-| eICU-CRD | 5 alerts/100 rows | 0.351 | 5.03 | 1.57 | 0.494 | 2.20 |
-| eICU-CRD | 80% calibration sensitivity | 0.801 | 27.76 | 6.97 | 0.876 | 2.32 |
-| SICdb | 5 alerts/100 rows | 0.198 | 4.94 | 1.43 | 0.318 | 2.13 |
-| SICdb | 80% calibration sensitivity | 0.803 | 57.97 | 13.28 | 0.879 | 2.34 |
+| Dataset | Strategy | Sensitivity | Alerts/100 rows | False episodes/100 rows | Event-stay sensitivity | Stays with >=1 alert | Stays with >=2 alerts | Median episodes/alerted stay | Lead time, h |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| MIMIC-IV 2020-2022 temporal test | 5 alerts/100 rows | 0.249 | 5.03 | 1.73 | 0.416 | 21.6% | 5.9% | 1.0 | 1.48 |
+| MIMIC-IV 2020-2022 temporal test | 80% calibration sensitivity | 0.805 | 44.14 | 10.13 | 0.882 | 64.9% | 48.7% | 3.0 | 2.00 |
+| eICU-CRD | 5 alerts/100 rows | 0.351 | 5.03 | 1.57 | 0.494 | 17.5% | 5.7% | 1.0 | 2.20 |
+| eICU-CRD | 80% calibration sensitivity | 0.801 | 27.76 | 6.97 | 0.876 | 53.6% | 31.0% | 2.0 | 2.32 |
+| SICdb | 5 alerts/100 rows | 0.198 | 4.94 | 1.43 | 0.318 | 18.0% | 4.4% | 1.0 | 2.13 |
+| SICdb | 80% calibration sensitivity | 0.803 | 57.97 | 13.28 | 0.879 | 87.0% | 55.3% | 2.0 | 2.34 |
 
 ## Hospital-level calibration model
 

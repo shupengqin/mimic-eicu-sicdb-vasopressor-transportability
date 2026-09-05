@@ -731,6 +731,11 @@ def policy_metrics(
     false_episodes = int(np.sum(emitted & (y == 0)))
     event_stays = int(event_stay.sum())
     detected_stays = int(np.sum((event_stay == 1) & (detected_stay == 1)))
+    emitted_count_by_stay = np.bincount(
+        record_codes, weights=emitted.astype(np.int8), minlength=len(unique_records)
+    )
+    alerted_stays = emitted_count_by_stay > 0
+    alerted_stay_counts = emitted_count_by_stay[alerted_stays]
     n = len(y)
     return {
         "threshold": threshold,
@@ -753,6 +758,21 @@ def policy_metrics(
         else np.nan,
         "episode_ppv": true_episodes / (true_episodes + false_episodes)
         if true_episodes + false_episodes
+        else np.nan,
+        # Stay-level exposure summaries use the same suppression rule. They
+        # are not patient-time or patient-day rates.
+        "stays_with_at_least_one_alert_percent": 100.0
+        * float(np.sum(alerted_stays))
+        / len(unique_records)
+        if len(unique_records)
+        else np.nan,
+        "stays_with_at_least_two_alerts_percent": 100.0
+        * float(np.sum(emitted_count_by_stay >= 2))
+        / len(unique_records)
+        if len(unique_records)
+        else np.nan,
+        "median_alert_episodes_per_alerted_stay": float(np.median(alerted_stay_counts))
+        if alerted_stay_counts.size
         else np.nan,
         "n_detected_event_stays_with_lead_time": len(detected_leads),
         "policy_lead_time_median_hours": float(np.median(detected_leads))
@@ -953,6 +973,9 @@ def run_brier_skill_and_fixed_policies() -> None:
             "false_episodes_per_100_landmarks",
             "event_stay_sensitivity",
             "episode_ppv",
+            "stays_with_at_least_one_alert_percent",
+            "stays_with_at_least_two_alerts_percent",
+            "median_alert_episodes_per_alerted_stay",
             "policy_lead_time_median_hours",
             "policy_lead_time_q1_hours",
             "policy_lead_time_q3_hours",
@@ -1333,6 +1356,7 @@ def run_summary() -> None:
         rv.OUTPUTS / "reviewer_hour6_competing_exit_metrics.csv",
         rv.OUTPUTS / "reviewer_sensitivity_model_metrics.csv",
         rv.OUTPUTS / "reviewer_brier_skill_summary.csv",
+        rv.OUTPUTS / "reviewer_full_logistic_recalibration_summary.csv",
         rv.OUTPUTS / "reviewer_fixed_policy_summary.csv",
         rv.OUTPUTS / "reviewer_predictor_qc_42_features.csv",
         rv.OUTPUTS / "reviewer_eicu_hospital_random_effects_summary.csv",
@@ -1341,8 +1365,9 @@ def run_summary() -> None:
     hour6 = pd.read_csv(required[1])
     models = pd.read_csv(required[2])
     brier = pd.read_csv(required[3])
-    policy = pd.read_csv(required[4])
-    hospital = pd.read_csv(required[6])
+    full_recalibration = pd.read_csv(required[4])
+    policy = pd.read_csv(required[5])
+    hospital = pd.read_csv(required[7])
 
     lines = [
         "# Reviewer-priority post hoc analyses",
@@ -1403,12 +1428,35 @@ def run_summary() -> None:
     lines.extend(
         [
             "",
+            "## Full logistic recalibration",
+            "",
+            "A post hoc logistic recalibration fitted an intercept and slope to the frozen prediction logit in each calibration subset. The transformed probabilities were applied once to the held-out evaluation subset; the HGB model and feature set were not refit.",
+            "",
+            "| Dataset | Method | Fitted slope, median (IQR) | Brier skill, median (IQR) |",
+            "| --- | --- | ---: | ---: |",
+        ]
+    )
+    recalibration_labels = {
+        "uncalibrated": "No recalibration",
+        "intercept_only": "Intercept-only",
+        "intercept_and_slope": "Intercept + slope",
+    }
+    for row in full_recalibration.itertuples(index=False):
+        lines.append(
+            f"| {DATASET_LABELS[row.dataset]} | {recalibration_labels[row.calibration_method]} | "
+            f"{row.fitted_slope_median:.3f} ({row.fitted_slope_q1:.3f} to {row.fitted_slope_q3:.3f}) | "
+            f"{row.brier_skill_median:.3f} ({row.brier_skill_q1:.3f} to {row.brier_skill_q3:.3f}) |"
+        )
+
+    lines.extend(
+        [
+            "",
             "## Fixed operating policies",
             "",
-            "Thresholds were selected in each calibration subset to target either five alerts per 100 eligible landmark rows or 80% landmark sensitivity, then applied unchanged to the evaluation subset. Policy lead time is the interval from the first emitted true-positive alert to the first target-pressor timestamp among detected event stays.",
+            "Thresholds were selected in each calibration subset to target either five alerts per 100 eligible landmark rows or 80% landmark sensitivity, then applied unchanged to the evaluation subset. Policy lead time is the interval from the first emitted true-positive alert to the first target-pressor timestamp among detected event stays. Stay-level alert exposure is summarized after six-hour suppression; it is not a patient-day rate.",
             "",
-            "| Dataset | Strategy | Sensitivity | Alerts/100 rows | False episodes/100 rows | Event-stay sensitivity | Lead time, h |",
-            "| --- | --- | ---: | ---: | ---: | ---: | ---: |",
+            "| Dataset | Strategy | Sensitivity | Alerts/100 rows | False episodes/100 rows | Event-stay sensitivity | Stays with >=1 alert | Stays with >=2 alerts | Median episodes/alerted stay | Lead time, h |",
+            "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
         ]
     )
     for row in policy.itertuples(index=False):
@@ -1420,7 +1468,10 @@ def run_summary() -> None:
         lines.append(
             f"| {DATASET_LABELS[row.dataset]} | {strategy} | {row.landmark_sensitivity_median:.3f} | "
             f"{row.alerts_per_100_landmarks_median:.2f} | {row.false_episodes_per_100_landmarks_median:.2f} | "
-            f"{row.event_stay_sensitivity_median:.3f} | {row.policy_lead_time_median_hours_median:.2f} |"
+            f"{row.event_stay_sensitivity_median:.3f} | {row.stays_with_at_least_one_alert_percent_median:.1f}% | "
+            f"{row.stays_with_at_least_two_alerts_percent_median:.1f}% | "
+            f"{row.median_alert_episodes_per_alerted_stay_median:.1f} | "
+            f"{row.policy_lead_time_median_hours_median:.2f} |"
         )
 
     lines.extend(
@@ -1474,6 +1525,8 @@ def run_public_release() -> None:
         "reviewer_brier_skill_full_cohort.csv",
         "reviewer_brier_skill_repeated_splits.csv",
         "reviewer_brier_skill_summary.csv",
+        "reviewer_full_logistic_recalibration_repeated.csv",
+        "reviewer_full_logistic_recalibration_summary.csv",
         "reviewer_fixed_policy_repeated_splits.csv",
         "reviewer_fixed_policy_summary.csv",
         "reviewer_predictor_qc_42_features.csv",
