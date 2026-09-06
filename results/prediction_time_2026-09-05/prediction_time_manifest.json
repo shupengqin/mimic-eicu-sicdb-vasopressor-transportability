@@ -1,0 +1,72 @@
+{
+  "analysis": "prediction_time_identifiable_hourly_operational_endpoint",
+  "release_date": "2026-09-05",
+  "endpoint": "documented continuous vasopressor initiation before min(index+6h, ICU/unit exit)",
+  "exit_without_event": "retained as operational non-event; not treated as death",
+  "selected_model": "hist_gradient_boosting",
+  "training": "MIMIC-IV 2008-2016 development; 2017-2019 selection; final refit 2008-2019",
+  "external_data_used_for_selection": false,
+  "bootstrap_replicates": 300,
+  "public_release": true,
+  "public_files": {
+    "prediction_time_brier_skill_summary.csv": {
+      "bytes": 889,
+      "sha256": "b4c74283f2ec6dca899a90c5e67efc3db38af3700aaa58a6c6986ac48ce5b4fd"
+    },
+    "prediction_time_calibration_deciles.csv": {
+      "bytes": 2438,
+      "sha256": "7837986eeaaa08e1298215ecb89e03f512545b3940919699c1115e9b3332085a"
+    },
+    "prediction_time_cohort_summary.csv": {
+      "bytes": 1116,
+      "sha256": "cc173ee3598234f82786a5ed14fba42b7d5a83fc298f7bdc7114cf2c8bf902f5"
+    },
+    "prediction_time_eicu_hospital_bootstrap.csv": {
+      "bytes": 225,
+      "sha256": "880bb4d57d882c30709f80ea73d6da135f0bd1b4eb2e5ee4192d747401d0d4a5"
+    },
+    "prediction_time_exit_summary.csv": {
+      "bytes": 413,
+      "sha256": "fef006ea32ae508d2b004fedd49a271dd0cc44f4db124de079f3b5116323755a"
+    },
+    "prediction_time_hospital_calibration.csv": {
+      "bytes": 19935,
+      "sha256": "3806ed1b3d253cff173eff50064ac8980ef6a50be7f449a1e58188431e396819"
+    },
+    "prediction_time_hospital_random_effects_summary.csv": {
+      "bytes": 489,
+      "sha256": "cbf8e81e5b32e9f529f6c7de4b83f8162343063f38fef62c532280202db72345"
+    },
+    "prediction_time_metrics.csv": {
+      "bytes": 3452,
+      "sha256": "f981643f10946304f17d076ed30b7b8b6105eb92aa0d810ba569a87c8ccccc5a"
+    },
+    "prediction_time_model_selection.csv": {
+      "bytes": 188,
+      "sha256": "bd9d9cef8463de8254527cfa5b5eb1a2b90c21d698a0e405f76f52c900be4b68"
+    },
+    "prediction_time_one_hour_gap.csv": {
+      "bytes": 600,
+      "sha256": "2d771404622fbda289eb6fc46781a7b74e8c0f6ea7783c05d8de48371287158b"
+    },
+    "prediction_time_outcome_sensitivity.csv": {
+      "bytes": 766,
+      "sha256": "33e38f22b6d473b69c88bd203c8d9b2bb9303d4a19ef673d1d6cfd2e51f87acb"
+    },
+    "prediction_time_policy_summary.csv": {
+      "bytes": 6857,
+      "sha256": "d10e6a7ba70138be91ff1de2b6cafc67e2c47b1fc218eb318dd3020cead59110"
+    },
+    "prediction_time_supplementary_extensions.csv": {
+      "bytes": 12842,
+      "sha256": "e149baa18970f0e07ed082128bb3ae38c1999c2fb5e4f40aa22cc27276c347b9"
+    }
+  },
+  "excluded_from_public_release": [
+    "raw source databases",
+    "patient-, stay-, and landmark-level extracts",
+    "row-level predictions",
+    "model objects",
+    "credentials and database connection details"
+  ]
+}
