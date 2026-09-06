@@ -1,72 +1,39 @@
-# Transportability of hourly vasopressor-initiation prediction
+# Prediction time vasopressor transportability
 
-Reproducible analysis code for the retrospective MIMIC-IV, eICU-CRD and SICdb study of temporal and geographic transportability of an hourly model for first documented continuous vasopressor initiation within six hours.
+This repository contains the reproducible SQL, Python analysis code, protocol documentation, and disclosure reviewed aggregate outputs for the prediction time identifiable hourly analysis reported in the accompanying manuscript.
 
 ## Scope
 
-This repository contains SQL extraction templates, Python analysis scripts, reporting helpers, methodological documentation, and disclosure-reviewed aggregate results. It does not contain raw database files, patient-level extracts, row-level predictions, credentials, or model objects.
+The primary estimand is an hourly operational risk set. A landmark is eligible when an adult patient is still in the ICU or unit and no target continuous vasopressor has been documented before that landmark. The event is the first documented initiation of norepinephrine, epinephrine, phenylephrine, vasopressin, or dopamine before the earlier of six hours after the landmark or ICU or unit exit. A stay exit without initiation is retained as an operational non event. This endpoint describes documented treatment transitions; it is not a measure of physiologic shock onset, treatment need, or clinician intent.
 
-## Analysis status and provenance
+The analysis uses MIMIC IV v3.1 for development, temporal model selection, and temporal testing; eICU CRD v2.0 for US multicenter evaluation; and SICdb v1.0.8 for single center Austrian evaluation. Source databases are restricted access and are not redistributed here.
 
-The study was not prospectively preregistered. The corrected rerun used MIMIC-IV `anchor_year_group` for temporal partitioning and locked the selected algorithm, hyperparameters, and preprocessing rules before the corrected temporal and external scoring pass. External data were not used for fitting, preprocessing estimation, hyperparameter selection, or algorithm selection in that corrected rerun. Earlier exploratory project work had already inspected some external results, however. In this repository, `locked` or `frozen` therefore means no external refitting or selection during the corrected rerun; it does not mean that the investigators were prospectively blinded to every external result.
+## Repository layout
 
-The reviewer-priority analyses dated 30 August 2026 are explicitly post hoc. They test alternative estimands, first-agent composition, strict norepinephrine-only and norepinephrine-at-first outcomes, probability skill, intercept-only and full logistic recalibration, operating policies, stay-level alert exposure, strict missingness-only and index-hour-plus-availability models, predictor quality, and hospital-level calibration heterogeneity. They do not replace the corrected primary analysis.
+- `docs/` protocol, data access, and code availability documentation
+- `sql/` extraction queries for MIMIC IV and eICU CRD
+- `src/` analysis, extension, hospital heterogeneity, cohort summary, and figure scripts
+- `results/prediction_time_2026-09-05/` disclosure reviewed aggregate source data for manuscript tables and figures
 
-## Data access
+## Reproduction order
 
-Obtain MIMIC-IV, eICU-CRD and SICdb directly from PhysioNet under their applicable credentialing, training and data-use agreements. Configure local paths and PostgreSQL connection settings with environment variables; do not commit passwords or local database paths.
+1. Obtain the three source databases directly from PhysioNet and comply with each database's credentialing, training, data use, and contributor review requirements.
+2. Run the database specific SQL under the relevant data access controls and save the resulting extracts locally. Set `PREDICTION_TIME_WORK_DIR` to that protected working directory.
+3. Run `src/prediction_time_analysis.py` to fit the fixed candidates and generate locked evaluation arrays and aggregate metrics.
+4. Run `src/prediction_time_extensions.py`, `src/prediction_time_hospital.py`, `src/summarize_prediction_time_cohorts.py`, and `src/make_prediction_time_figures.py` in that order. Set `PREDICTION_TIME_OUTPUT_DIR` and `PREDICTION_TIME_FIGURE_DIR` when outputs are stored outside the repository.
 
-Important environment variables for `src/run_validation.py`:
+The scripts check required columns before analysis. Random seeds, model hyperparameters, accepted value ranges, endpoint definitions, and uncertainty procedures are recorded in `docs/prediction_time_protocol.md`.
 
-```text
-SICDB_PATH       Local SICdb directory
-PSQL_PATH        psql executable, if not available on PATH
-MIMIC_WORK_DIR   Working directory for local extracts
-MIMIC_OUTPUT_DIR Output directory for local results
-MIMIC_DB         MIMIC-IV database name
-EICU_DB          eICU database name
-PGHOST           PostgreSQL host
-PGPORT           PostgreSQL port
-PGUSER           PostgreSQL user
-PGPASSWORD       PostgreSQL password, supplied only through the environment
-```
+The analysis environment was Python 3.14.5 with NumPy 2.5.0, pandas 3.0.4, SciPy 1.18.0, scikit-learn 1.9.0, joblib 1.5.3, matplotlib 3.11.0, and python-docx 1.2.0. The corresponding lock file in the repository is the installation reference; package availability can vary by operating system.
 
-## Reproduction outline
+## What is excluded
 
-1. Create a local working directory outside this repository and obtain the three source databases through PhysioNet.
-2. Review and adapt the SQL templates in `sql/` to the local schema and database versions.
-3. Run `src/run_validation.py` to create the local landmark extracts and the
-   baseline outputs. Run `src/corrected_modeling.py` to fit and freeze the
-   corrected MIMIC-IV models, then run the clustered, recalibration,
-   sensitivity, table, and figure scripts in `src/` in that order.
-4. Use `src/generate_submission_tables.py` and
-   `src/generate_submission_documents.py` only after the aggregate outputs
-   have been reviewed.
-5. Run `src/reviewer_data_extensions.py` locally to create the nonredistributable
-   first-agent and prediction-time-identifiable hour-6 inputs. Then run
-   `src/reviewer_analysis_extensions.py` by stage (`composition`, `hour6`,
-   `models`, `policy`, `qc`, `hospital`, and `summary`).
-6. Review the resulting aggregate outputs for disclosure compliance before
-   sharing.
+The public repository does not contain raw database files, patient-, stay-, or landmark-level extracts, row-level predictions, model objects, credentials, database connection details, or local machine paths. The aggregate files are intended to support the published tables and figures; they should not be reverse engineered into individual records.
 
-The primary manuscript analysis reports a six-hour complete-horizon conditional estimand. A post hoc ICU-hour-6 analysis determines eligibility using information available at hour 6, retains early ICU exit as a competing outcome, and predicts target-pressor initiation before hour 12 or ICU exit. Neither estimand should be interpreted as treatment need, clinical effectiveness, or deployment readiness. Decision curves and alert-policy analyses are exploratory landmark-level analyses. Their rates use eligible landmark rows as the denominator because rows are repeated hourly opportunities within stays; they are not patient-time rates.
+## Data and code access
 
-Brier skill is reported relative to a prevalence-only forecast estimated in each identifier-disjoint calibration subset and applied unchanged to the corresponding evaluation subset. Full logistic recalibration fits an intercept and slope to the frozen prediction logit in the calibration subset and applies that transformation once to the evaluation subset; it does not refit HGB or change the primary estimand. Fixed-policy thresholds are also selected only in the calibration subset. Policy lead time is the interval from the first emitted true-positive alert to the first target-pressor timestamp among detected event stays, not the distribution of all positive landmark windows. Stay-level alert exposure is reported after six-hour suppression; patient-day rates are not estimated because the eligible landmark extract does not define a complete patient-time denominator.
-
-The eICU extraction template explicitly prioritizes periodic over aperiodic
-vital signs at the same timestamp, removes duplicate stay-time-variable rows,
-uses token-boundary laboratory matching, and applies physiologic range checks
-before window aggregation. The primary manuscript numbers were generated from
-the disclosure-reviewed aggregate outputs in the accompanying package. If the
-SQL templates are changed or rerun, regenerate all downstream outputs and
-record the new hashes in the run manifest.
-
-## Reproducibility and sharing
-
-The source databases, patient/stay/landmark-level extracts, row-level predictions, and model objects must not be uploaded here. Public releases should contain only scrubbed code, environment metadata, and disclosure-reviewed aggregate outputs. Any model sharing requires approval from the relevant data custodians and a controlled-access route.
-
-The public aggregate results for the final reviewer-priority analyses are under `results/reviewer_priority_2026-08-30/`. The local `work/` and `outputs/` directories remain ignored.
+See `docs/prediction_time_data_code_availability.md` for source database citations, access requirements, and the data availability wording used in the manuscript. The repository is public, but access to the source data remains controlled by PhysioNet and the SICdb contributor review process.
 
 ## Citation
 
-When the manuscript is published, replace this section with the final citation and DOI. Until then, cite the corresponding manuscript and the official PhysioNet dataset records.
+When using this code, cite the accompanying manuscript and the source database publications listed in `docs/prediction_time_data_code_availability.md`. A permanent archive DOI or software license is not asserted here because those author owned release details must be confirmed separately.
