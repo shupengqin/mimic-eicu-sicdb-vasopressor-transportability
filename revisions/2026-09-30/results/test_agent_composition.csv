@@ -1,0 +1,13 @@
+first_agents,event_stays,cohort,percent
+norepinephrine,230,test,72.78481012658227
+phenylephrine,40,test,12.658227848101266
+vasopressin,14,test,4.430379746835443
+epinephrine,14,test,4.430379746835443
+epinephrine+phenylephrine,4,test,1.2658227848101267
+epinephrine+norepinephrine,4,test,1.2658227848101267
+epinephrine+vasopressin,4,test,1.2658227848101267
+dopamine,2,test,0.6329113924050633
+dopamine+vasopressin,1,test,0.31645569620253167
+epinephrine+phenylephrine+vasopressin,1,test,0.31645569620253167
+phenylephrine+vasopressin,1,test,0.31645569620253167
+norepinephrine+vasopressin,1,test,0.31645569620253167

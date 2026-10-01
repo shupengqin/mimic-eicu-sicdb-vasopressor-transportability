@@ -1,0 +1,19 @@
+dataset,variable,nonmissing_observations,rejected_observations,source_level
+sicdb,dbp,84117,17,published hourly aggregates
+sicdb,hr,218754,50,published hourly aggregates
+sicdb,map,84219,35,published hourly aggregates
+sicdb,rr,112515,6581,published hourly aggregates
+sicdb,sbp,84119,12,published hourly aggregates
+sicdb,spo2,83373,7,published hourly aggregates
+sicdb,temp,73936,3207,published hourly aggregates
+sicdb,bicarbonate,28925,43,laboratory records
+sicdb,bun,6305,90,laboratory records
+sicdb,creatinine,6253,0,laboratory records
+sicdb,glucose,32357,4,laboratory records
+sicdb,hematocrit,35108,9,laboratory records
+sicdb,hemoglobin,35306,3,laboratory records
+sicdb,lactate,28982,1,laboratory records
+sicdb,ph,28559,1,laboratory records
+sicdb,potassium,32383,2,laboratory records
+sicdb,sodium,33429,1,laboratory records
+sicdb,wbc,6375,7,laboratory records

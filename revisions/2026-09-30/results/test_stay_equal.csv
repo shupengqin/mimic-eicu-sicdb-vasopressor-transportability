@@ -1,0 +1,2 @@
+cohort,analysis,auroc,auprc,brier
+test,equal_total_stay_evaluation_weight,0.826987304180192,0.2505307943056475,0.021251970163695302

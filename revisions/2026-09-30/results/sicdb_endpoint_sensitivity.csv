@@ -1,0 +1,3 @@
+cohort,analysis,n_landmarks,n_positive_landmarks,auroc,auprc,brier
+sicdb,strict_norepinephrine,58756,2381,0.6972999214960269,0.10105626110950985,0.03799186840113663
+sicdb,norepinephrine_at_first,58756,2387,0.6977139450599182,0.10122377547666454,0.03808405549636989

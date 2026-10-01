@@ -1,0 +1,2 @@
+cohort,stays,landmarks,event_stays,event_stay_percent,positive_landmarks,positive_percent,exit_truncated_landmarks,exit_percent,age_q1,age_median,age_q3,male_percent
+development,51869,860892,3514,6.774759490254295,14073,1.6346998229743104,91582,10.638035897650344,54.0,66.0,78.0,53.978294372558594

@@ -1,39 +1,21 @@
-# Prediction time vasopressor transportability
+# Vasopressor prediction across MIMIC-IV, eICU-CRD and SICdb
 
-This repository contains the reproducible SQL, Python analysis code, protocol documentation, and disclosure reviewed aggregate outputs for the prediction time identifiable hourly analysis reported in the accompanying manuscript.
+## Current manuscript revision
 
-## Scope
+The corrected analysis, executed extraction SQL and aggregate outputs are in **[revisions/2026-09-30](revisions/2026-09-30/README.md)**, published on 1 October 2026. Use that directory to reproduce the revised manuscript. It contains a runnable configuration, dependency pins, execution records and SHA-256 checksums.
 
-The primary estimand is an hourly operational risk set. A landmark is eligible when an adult patient is still in the ICU or unit and no target continuous vasopressor has been documented before that landmark. The event is the first documented initiation of norepinephrine, epinephrine, phenylephrine, vasopressin, or dopamine before the earlier of six hours after the landmark or ICU or unit exit. A stay exit without initiation is retained as an operational non event. This endpoint describes documented treatment transitions; it is not a measure of physiologic shock onset, treatment need, or clinician intent.
+The revision corrects SICdb hourly aggregate availability, source range-filter order, the eICU discharge-offset query, treatment-time risk-set boundaries, correct-alert detection and lead time, and held-out Brier reference forecasts. It adds paired model-difference intervals, current-cohort quality checks, laboratory measurement-age sensitivities, and exit-composition audits. MIMIC groups are described as patient reference-period groups rather than strictly chronological admission splits. See [the change record](docs/revision_2026-09-30.md).
 
-The analysis uses MIMIC IV v3.1 for development, temporal model selection, and temporal testing; eICU CRD v2.0 for US multicenter evaluation; and SICdb v1.0.8 for single center Austrian evaluation. Source databases are restricted access and are not redistributed here.
+## Reproduce the revised analysis
 
-## Repository layout
+1. Obtain authorized access to MIMIC-IV 3.1, eICU-CRD 2.0 and SICdb 1.0.8, following each source's data-access requirements.
+2. Enter `revisions/2026-09-30`, install its requirements and configure local source locations and database authentication as described in its README.
+3. Follow that README's extraction, fitting, evaluation and verification order. Patient-level outputs must remain in the protected local workspace.
 
-- `docs/` protocol, data access, and code availability documentation
-- `sql/` extraction queries for MIMIC IV and eICU CRD
-- `src/` analysis, extension, hospital heterogeneity, cohort summary, and figure scripts
-- `results/prediction_time_2026-09-05/` disclosure reviewed aggregate source data for manuscript tables and figures
+Only code and aggregate research outputs are shared. Original data, patient/stay/landmark extracts, individual predictions, fitted models and credentials are excluded. The public historical configuration snapshot redacts machine-specific paths; its changes are explicitly recorded. No new full-database run was performed solely for this GitHub publication.
 
-## Reproduction order
+## Historical submitted analysis
 
-1. Obtain the three source databases directly from PhysioNet and comply with each database's credentialing, training, data use, and contributor review requirements.
-2. Run the database specific SQL under the relevant data access controls and save the resulting extracts locally. Set `PREDICTION_TIME_WORK_DIR` to that protected working directory.
-3. Run `src/prediction_time_analysis.py` to fit the fixed candidates and generate locked evaluation arrays and aggregate metrics.
-4. Run `src/prediction_time_extensions.py`, `src/prediction_time_hospital.py`, `src/summarize_prediction_time_cohorts.py`, and `src/make_prediction_time_figures.py` in that order. Set `PREDICTION_TIME_OUTPUT_DIR` and `PREDICTION_TIME_FIGURE_DIR` when outputs are stored outside the repository.
+The reviewed implementation is preserved at [commit 7844ca86089cca0a6b3196fc02007f338e728b01](https://github.com/shupengqin/mimic-eicu-sicdb-vasopressor-transportability/tree/7844ca86089cca0a6b3196fc02007f338e728b01). Root-level `src/`, `sql/`, the older `docs/`, and `results/prediction_time_2026-09-05/` remain historical materials; they do not generate the corrected manuscript results. The [submitted README](docs/submitted_README_2026-09-05.md) is retained for traceability.
 
-The scripts check required columns before analysis. Random seeds, model hyperparameters, accepted value ranges, endpoint definitions, and uncertainty procedures are recorded in `docs/prediction_time_protocol.md`.
-
-The analysis environment was Python 3.14.5 with NumPy 2.5.0, pandas 3.0.4, SciPy 1.18.0, scikit-learn 1.9.0, joblib 1.5.3, matplotlib 3.11.0, and python-docx 1.2.0. The corresponding lock file in the repository is the installation reference; package availability can vary by operating system.
-
-## What is excluded
-
-The public repository does not contain raw database files, patient-, stay-, or landmark-level extracts, row-level predictions, model objects, credentials, database connection details, or local machine paths. The aggregate files are intended to support the published tables and figures; they should not be reverse engineered into individual records.
-
-## Data and code access
-
-See `docs/prediction_time_data_code_availability.md` for source database citations, access requirements, and the data availability wording used in the manuscript. The repository is public, but access to the source data remains controlled by PhysioNet and the SICdb contributor review process.
-
-## Citation
-
-When using this code, cite the accompanying manuscript and the source database publications listed in `docs/prediction_time_data_code_availability.md`. A permanent archive DOI or software license is not asserted here because those author owned release details must be confirmed separately.
+For source-database access and citations, see [the data-access documentation](docs/prediction_time_data_code_availability.md). Cite the applicable code version alongside the manuscript and source database publications. No archive DOI or new software license is asserted by this update.

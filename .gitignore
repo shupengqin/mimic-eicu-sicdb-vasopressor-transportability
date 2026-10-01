@@ -34,3 +34,15 @@ venv/
 # OS files
 Thumbs.db
 Desktop.ini
+
+# Corrected revision: publish only its reviewed aggregate CSVs and manifests
+!revisions/2026-09-30/results/*.csv
+!revisions/2026-09-30/SHA256.csv
+!revisions/2026-09-30/PUBLICATION_PROVENANCE.csv
+private/
+submitted_inputs/
+original/
+exports/
+*.npy
+*.sqlite
+*.db

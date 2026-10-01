@@ -1,0 +1,7 @@
+{
+  "dataset": "mimic",
+  "seconds": 158.29501867294312,
+  "query_sha256": "f08f9fb3771e3718a7bd238d7fad8baf0fc94bda87b8e198da841ad10027bc3c",
+  "exit_code": 0,
+  "compressed_bytes": 81101251
+}

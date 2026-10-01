@@ -1,0 +1,12 @@
+dataset,variable,nonmissing_observations,rejected_observations
+eicu,creatinine,262308,4673
+eicu,sodium,291884,4688
+eicu,potassium,310238,2
+eicu,bicarbonate,418656,1090
+eicu,glucose,890397,466
+eicu,bun,255315,111
+eicu,lactate,79709,21
+eicu,ph,131986,16
+eicu,hemoglobin,265933,38
+eicu,hematocrit,260183,53
+eicu,wbc,223520,787

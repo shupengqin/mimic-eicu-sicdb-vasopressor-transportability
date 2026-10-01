@@ -1,0 +1,3 @@
+cohort,population,landmarks,stays,death_proxy_stays,death_proxy_percent,hospice_stays,death_definition
+sicdb,all,58756,3997,205,5.128846634976232,,death offset no later than case closure
+sicdb,exit_truncated,8699,1656,28,1.6908212560386473,,death offset no later than case closure

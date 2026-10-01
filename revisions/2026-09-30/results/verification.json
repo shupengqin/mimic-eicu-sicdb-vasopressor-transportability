@@ -1,0 +1,63 @@
+{
+  "development": {
+    "landmarks": 860892,
+    "stays": 51869,
+    "positive_rows": 14073,
+    "unique_landmarks": true,
+    "42_predictors": true,
+    "positive_lead_strictly_under_6h": true,
+    "lab_age_bounded_24h": true,
+    "QC_matches_full_inputs": true
+  },
+  "selection": {
+    "landmarks": 206791,
+    "stays": 12389,
+    "positive_rows": 3314,
+    "unique_landmarks": true,
+    "42_predictors": true,
+    "positive_lead_strictly_under_6h": true,
+    "lab_age_bounded_24h": true,
+    "QC_matches_full_inputs": true
+  },
+  "test": {
+    "landmarks": 165204,
+    "stays": 9534,
+    "positive_rows": 1250,
+    "unique_landmarks": true,
+    "42_predictors": true,
+    "positive_lead_strictly_under_6h": true,
+    "lab_age_bounded_24h": true,
+    "QC_matches_full_inputs": true,
+    "repeated_splits": 100,
+    "paired_bootstraps": 300,
+    "all_correct_alert_leads_under_6h": true
+  },
+  "eicu": {
+    "landmarks": 2745224,
+    "stays": 168636,
+    "positive_rows": 27039,
+    "unique_landmarks": true,
+    "42_predictors": true,
+    "positive_lead_strictly_under_6h": true,
+    "lab_age_bounded_24h": true,
+    "QC_matches_full_inputs": true,
+    "repeated_splits": 100,
+    "paired_bootstraps": 300,
+    "all_correct_alert_leads_under_6h": true
+  },
+  "sicdb": {
+    "landmarks": 58756,
+    "stays": 3997,
+    "positive_rows": 2453,
+    "unique_landmarks": true,
+    "42_predictors": true,
+    "positive_lead_strictly_under_6h": true,
+    "lab_age_bounded_24h": true,
+    "QC_matches_full_inputs": true,
+    "repeated_splits": 100,
+    "paired_bootstraps": 300,
+    "all_correct_alert_leads_under_6h": true
+  },
+  "mimic_patient_disjoint": true,
+  "SQL_hashes_match_executed_queries": true
+}

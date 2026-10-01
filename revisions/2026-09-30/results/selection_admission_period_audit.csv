@@ -1,0 +1,2 @@
+cohort,stays,anchor_delta_nonzero_stays,possible_outside_claimed_period,definitely_outside_claimed_period,min_possible_admission_year,max_possible_admission_year,claimed_lower,claimed_upper
+selection,12389,2837,2837,903,2017,2025,2017,2019

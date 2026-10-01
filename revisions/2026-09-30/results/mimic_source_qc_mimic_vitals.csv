@@ -1,0 +1,8 @@
+dataset,variable,nonmissing_observations,rejected_observations
+mimic,hr,2437766,78
+mimic,sbp,2402367,343
+mimic,dbp,2401751,175
+mimic,map,2400640,2315
+mimic,rr,2434983,109
+mimic,temp,681260,9
+mimic,spo2,2381903,705

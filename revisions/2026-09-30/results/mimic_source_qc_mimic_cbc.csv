@@ -1,0 +1,4 @@
+dataset,variable,nonmissing_observations,rejected_observations
+mimic,hemoglobin,188588,22
+mimic,hematocrit,213495,36
+mimic,wbc,185699,33

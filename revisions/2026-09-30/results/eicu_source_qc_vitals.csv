@@ -1,0 +1,8 @@
+dataset,variable,nonmissing_observations,rejected_observations
+eicu,hr,44740193,10669
+eicu,sbp,16341738,11045
+eicu,dbp,16342800,17107
+eicu,map,16465294,50164
+eicu,rr,39728540,314907
+eicu,temp,6303051,76621
+eicu,spo2,40735341,24269

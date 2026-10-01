@@ -1,0 +1,7 @@
+dataset,variable,nonmissing_observations,rejected_observations
+mimic,creatinine,187063,21
+mimic,sodium,189890,0
+mimic,potassium,193697,3
+mimic,bicarbonate,186203,69
+mimic,glucose,175756,135
+mimic,bun,186546,63

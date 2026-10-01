@@ -1,0 +1,2 @@
+cohort,stays,landmarks,event_stays,event_stay_percent,positive_landmarks,positive_percent,exit_truncated_landmarks,exit_percent,age_q1,age_median,age_q3,male_percent
+eicu,168636,2745224,6352,3.7666927583671335,27039,0.9849469478629067,327932,11.945546155796393,52.0,65.0,76.0,53.76748275756836

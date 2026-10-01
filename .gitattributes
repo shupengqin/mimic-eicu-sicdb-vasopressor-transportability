@@ -1,0 +1,3 @@
+# Preserve the reviewed revision bytes so published SHA-256 checksums also
+# match Git checkouts on Windows and the downloadable release package.
+revisions/2026-09-30/** -text

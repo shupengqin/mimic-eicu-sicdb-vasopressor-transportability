@@ -1,0 +1,3 @@
+cohort,population,landmarks,stays,death_proxy_stays,death_proxy_percent,hospice_stays,death_definition
+test,all,165204,9534,722,7.5728970002097755,,same date as ICU exit; date-level proxy
+test,exit_truncated,12308,2467,153,6.20186461289015,,same date as ICU exit; date-level proxy

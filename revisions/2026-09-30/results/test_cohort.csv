@@ -1,0 +1,2 @@
+cohort,stays,landmarks,event_stays,event_stay_percent,positive_landmarks,positive_percent,exit_truncated_landmarks,exit_percent,age_q1,age_median,age_q3,male_percent
+test,9534,165204,316,3.3144535347178516,1250,0.7566402750538728,12308,7.450182804290454,55.0,66.0,76.0,58.2966194152832
