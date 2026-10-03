@@ -1,7 +1,0 @@
-dataset,analysis,n_landmarks,n_event_landmarks,auroc,auprc
-mimic_temporal_test,primary_hgb_on_gap_cohort,164914,960,0.7493671179619485,0.024152505779059148
-mimic_temporal_test,one_hour_gap_hgb,164914,960,0.7492843965888807,0.02510917716957154
-sicdb_external,primary_hgb_on_gap_cohort,58246,1943,0.6902401442002896,0.08409452143457248
-sicdb_external,one_hour_gap_hgb,58246,1943,0.6836973434553058,0.08046339736847398
-eicu_external,primary_hgb_on_gap_cohort,2739363,21178,0.8419269270597334,0.04838262345765494
-eicu_external,one_hour_gap_hgb,2739363,21178,0.840244912342403,0.045917983923766295

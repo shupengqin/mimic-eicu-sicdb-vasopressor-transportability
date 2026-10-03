@@ -3,6 +3,7 @@ import sys,json,gc,subprocess,io
 import numpy as np
 import pandas as pd
 from config import *
+from input_audit import changed_cells
 sys.path.insert(0,str(SOURCE/'src'))
 import run_validation as rv
 
@@ -24,12 +25,13 @@ allcount=0
 comparison=[]
 for chunk in pd.read_csv(path,chunksize=100000,low_memory=False):
     idx=pd.MultiIndex.from_frame(chunk[key])
-    x=rv.feature_frame(chunk).to_numpy(np.float32)
+    feature_values=rv.feature_frame(chunk)
+    x=feature_values.to_numpy(np.float32)
     if old is not None:
         baseline=old.reindex(idx).reset_index()
         assert baseline.label.notna().all() and np.array_equal(baseline.label.to_numpy(),chunk.label.to_numpy())
-        oldx=rv.feature_frame(baseline).to_numpy(np.float32)
-        allchanges+=(~np.isclose(x,oldx,equal_nan=True,rtol=1e-6,atol=1e-7)).sum(axis=0)
+        baseline_values=rv.feature_frame(baseline)
+        allchanges+=changed_cells(feature_values,baseline_values,dataset).sum(axis=0)
     allcount+=len(chunk)
     if dataset=='mimic':
         split=chunk.time_group.map(lambda t:'development' if t in rv.MIMIC_DEVELOPMENT_GROUPS else ('selection' if t in rv.MIMIC_SELECTION_GROUPS else 'test'))

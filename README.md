@@ -1,21 +1,19 @@
 # Vasopressor prediction across MIMIC-IV, eICU-CRD and SICdb
 
-## Current manuscript revision
+## Download and reproduce
 
-The corrected analysis, executed extraction SQL and aggregate outputs are in **[revisions/2026-09-30](revisions/2026-09-30/README.md)**, published on 1 October 2026. Use that directory to reproduce the revised manuscript. It contains a runnable configuration, dependency pins, execution records and SHA-256 checksums.
+Use [release revision-2026-10-03](https://github.com/shupengqin/mimic-eicu-sicdb-vasopressor-transportability/releases/tag/revision-2026-10-03) and the [analysis package](revisions/2026-09-30/README.md). The directory date identifies the 30 September analytical run; the 3 October release synchronizes its input-audit code and aggregate results with Supplementary Table 6. It is the only supported package in the default branch.
 
-The revision corrects SICdb hourly aggregate availability, source range-filter order, the eICU discharge-offset query, treatment-time risk-set boundaries, correct-alert detection and lead time, and held-out Brier reference forecasts. It adds paired model-difference intervals, current-cohort quality checks, laboratory measurement-age sensitivities, and exit-composition audits. MIMIC groups are described as patient reference-period groups rather than strictly chronological admission splits. See [the change record](docs/revision_2026-09-30.md).
+Obtain authorized access to MIMIC-IV 3.1, eICU-CRD 2.0 and SICdb 1.0.8, then follow the package README. The release contains code, executed SQL, aggregate results, tests and SHA-256 manifests. Patient-level records, individual predictions, fitted models and credentials are not distributed.
 
-## Reproduce the revised analysis
+## Audit correction
 
-1. Obtain authorized access to MIMIC-IV 3.1, eICU-CRD 2.0 and SICdb 1.0.8, following each source's data-access requirements.
-2. Enter `revisions/2026-09-30`, install its requirements and configure local source locations and database authentication as described in its README.
-3. Follow that README's extraction, fitting, evaluation and verification order. Patient-level outputs must remain in the protected local workspace.
+The aligned SICdb audit now uses the same float64 comparison and tolerance as its timing/filter-order audit. Both report 1,116,906 changed cells across 58,756 landmarks and 42 predictors. The earlier aligned audit used float32 and a looser tolerance, giving 1,116,862. The 44-cell difference affected 13 predictors and was reproduced from retained inputs. It was an audit-count discrepancy, not a model-data or prediction change. MIMIC-IV and eICU audit conventions and results are unchanged.
 
-Only code and aggregate research outputs are shared. Original data, patient/stay/landmark extracts, individual predictions, fitted models and credentials are excluded. The public historical configuration snapshot redacts machine-specific paths; its changes are explicitly recorded. No new full-database run was performed solely for this GitHub publication.
+The updated SICdb array preparation was rerun on retained extracts and all saved model-array fields matched the existing arrays. Models were not refitted. [Release notes](revisions/2026-09-30/RELEASE_NOTES_2026-10-03.md) record the verification and its limits.
 
-## Historical submitted analysis
+## Version history
 
-The reviewed implementation is preserved at [commit 7844ca86089cca0a6b3196fc02007f338e728b01](https://github.com/shupengqin/mimic-eicu-sicdb-vasopressor-transportability/tree/7844ca86089cca0a6b3196fc02007f338e728b01). Root-level `src/`, `sql/`, the older `docs/`, and `results/prediction_time_2026-09-05/` remain historical materials; they do not generate the corrected manuscript results. The [submitted README](docs/submitted_README_2026-09-05.md) is retained for traceability.
+Superseded root-level scripts, SQL, aggregate results and documents have been removed from the default branch to prevent accidental use. Required helper modules remain inside the analysis package. The previous release and its download assets are replaced by revision-2026-10-03.
 
-For source-database access and citations, see [the data-access documentation](docs/prediction_time_data_code_availability.md). Cite the applicable code version alongside the manuscript and source database publications. No archive DOI or new software license is asserted by this update.
+The originally reviewed implementation remains traceable at [commit 7844ca86089cca0a6b3196fc02007f338e728b01](https://github.com/shupengqin/mimic-eicu-sicdb-vasopressor-transportability/tree/7844ca86089cca0a6b3196fc02007f338e728b01), and the preceding publication at [commit 088f8246caa341f9ccc9114ad22328ce5f22d4a2](https://github.com/shupengqin/mimic-eicu-sicdb-vasopressor-transportability/tree/088f8246caa341f9ccc9114ad22328ce5f22d4a2). Git history is preserved. No archive DOI or new software license is asserted.

@@ -1,0 +1,10 @@
+{
+  "aligned_landmarks": 58756,
+  "predictors": 42,
+  "previous_float32_rtol_1e_6_atol_1e_7_total": 1116862,
+  "aligned_float64_rtol_1e_7_atol_1e_8_total": 1116906,
+  "difference_cells": 44,
+  "features_with_different_counts": 13,
+  "all_feature_counts_match_stepwise_csv": true,
+  "model_arrays_or_predictions_modified": false
+}

@@ -1,4 +1,0 @@
-dataset,n_stays,n_landmarks,n_exit_truncated_landmarks,percent_exit_truncated_landmarks,median_observed_horizon_hours,q25_observed_horizon_hours,q75_observed_horizon_hours,n_exit_truncated_stays
-mimic_temporal_test,9535,165205,12308,7.4501377076964985,6.0,6.0,6.0,2467
-sicdb_external,3997,58766,8699,14.802777116019467,6.0,6.0,6.0,1656
-eicu_external,168645,2745346,327932,11.945015309545683,6.0,6.0,6.0,65633
